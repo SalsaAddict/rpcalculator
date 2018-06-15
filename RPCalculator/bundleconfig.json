@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "Scripts/rpcalculator/rpcalculator.min.js",
+    "inputFiles": [
+      "Scripts/rpcalculator/rpcalculator.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/rpcalculator.min.css",
+    "inputFiles": [
+      "Content/rpcalculator.css"
+    ]
+  }
+]
