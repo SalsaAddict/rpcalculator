@@ -34,11 +34,49 @@ module.run(["$rootScope", function ($rootScope) {
             return output;
         };
     }]);
+var Example;
+(function (Example) {
+    Example.workbook = {
+        title: "Skating System Example",
+        worksheets: [
+            {
+                title: "Simple Example",
+                judges: [{ name: "John" }, { name: "Beyoncé" }, { name: "Paul" }, { name: "Kelly" }, { name: "George" }, { name: "Michelle" }, { name: "Ringo" }],
+                competitors: []
+            },
+            { title: "Intermediate Example", judges: [], competitors: [] },
+            { title: "Complex Example", judges: [], competitors: [] },
+        ]
+    };
+})(Example || (Example = {}));
 var RPCalculator;
 (function (RPCalculator) {
     "use strict";
+    RPCalculator.maxJudges = 7;
+    RPCalculator.maxCompetitors = 8;
     RPCalculator.textPattern = "(^[\\w\\s-]+$)";
     RPCalculator.numberPattern = "(^\\d+$)";
+    function isBlank(value) {
+        if (angular.isUndefined(value))
+            return true;
+        if (value === null)
+            return true;
+        if (angular.isArray(value))
+            return value.length === 0;
+        if (angular.isObject(value))
+            return angular.toJson(value) === angular.toJson({});
+        if (String(value).trim() === "")
+            return true;
+        if (isNaN(value))
+            return true;
+        return false;
+    }
+    RPCalculator.isBlank = isBlank;
+    function ifBlank(value, defaultValue) { return (isBlank(value)) ? defaultValue : value; }
+    RPCalculator.ifBlank = ifBlank;
+})(RPCalculator || (RPCalculator = {}));
+(function (RPCalculator) {
+    "use strict";
     function toInt(value) {
         var regExp = new RegExp(RPCalculator.numberPattern);
         if (!regExp.test(value))
@@ -46,14 +84,6 @@ var RPCalculator;
         return parseInt(regExp.exec(value)[1], 10);
     }
     RPCalculator.toInt = toInt;
-    RPCalculator.Example = {
-        title: "Skating System Example",
-        worksheets: [
-            { title: "Simple Example", judges: ["John", "Paul", "George", "Ringo", "Beyoncé", "Kelly", "Michelle"] },
-            { title: "Intermediate Example" },
-            { title: "Complex Example" },
-        ]
-    };
     var Workbook;
     (function (Workbook) {
         var Service = /** @class */ (function () {
@@ -69,8 +99,7 @@ var RPCalculator;
             };
             Object.defineProperty(Service.prototype, "workbook", {
                 get: function () {
-                    if (angular.isUndefined(this.$localStorage.workbook))
-                        this.$localStorage.workbook = RPCalculator.Example;
+                    this.$localStorage.workbook = RPCalculator.ifBlank(this.$localStorage.workbook, Example.workbook);
                     return this.$localStorage.workbook;
                 },
                 enumerable: true,
@@ -95,16 +124,16 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Service.prototype.judgesValidationError = function (worksheet) {
-                if (!angular.isArray(worksheet.judges) || worksheet.judges.length < 3)
+            Service.prototype.validateJudges = function (judges) { return !this.judgesValidationError(judges); };
+            Service.prototype.judgesValidationError = function (judges) {
+                if (RPCalculator.isBlank(judges) || !angular.isArray(judges) || judges.length < 3)
                     return "There must be at least 3 judges";
-                if (worksheet.judges.length > 7)
-                    return "There cannot be more than 7 judges";
-                if (worksheet.judges.length % 2 === 0)
+                if (judges.length > RPCalculator.maxJudges)
+                    return "There cannot be more than " + RPCalculator.maxJudges + " judges";
+                if (judges.length % 2 === 0)
                     return "There must be an odd number of judges";
                 return;
             };
-            Service.prototype.validateJudges = function (worksheet) { return !this.judgesValidationError(worksheet); };
             Service.$inject = ["$localStorage", "$location"];
             return Service;
         }());
@@ -121,7 +150,10 @@ var RPCalculator;
     var Worksheet;
     (function (Worksheet) {
         var BaseController = /** @class */ (function () {
-            function BaseController() {
+            function BaseController($wb, $routeParams) {
+                this.$wb = $wb;
+                this.$routeParams = $routeParams;
+                this.judges = angular.copy(this.worksheet.judges);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index]))
                     this.$wb.go();
             }
@@ -135,16 +167,15 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
+            BaseController.$inject = ["$wb", "$routeParams"];
             return BaseController;
         }());
         Worksheet.BaseController = BaseController;
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
             function Controller($wb, $routeParams) {
-                var _this = _super.call(this) || this;
-                _this.$wb = $wb;
-                _this.$routeParams = $routeParams;
-                if (!$wb.validateJudges(_this.worksheet))
+                var _this = _super.call(this, $wb, $routeParams) || this;
+                if (!$wb.validateJudges(_this.worksheet.judges))
                     $wb.go("/judges", _this.index);
                 return _this;
             }
@@ -157,7 +188,6 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Controller.$inject = ["$wb", "$routeParams"];
             return Controller;
         }(BaseController));
         Worksheet.Controller = Controller;
@@ -167,22 +197,44 @@ var RPCalculator;
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
             function Controller($wb, $routeParams) {
-                var _this = _super.call(this) || this;
-                _this.$wb = $wb;
-                _this.$routeParams = $routeParams;
-                return _this;
+                return _super.call(this, $wb, $routeParams) || this;
             }
             Object.defineProperty(Controller.prototype, "invalid", {
-                get: function () { return !this.$wb.validateJudges(this.worksheet); },
+                get: function () { return !this.$wb.validateJudges(this.judges); },
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(Controller.prototype, "error", {
-                get: function () { return this.$wb.judgesValidationError(this.worksheet); },
+                get: function () { return this.$wb.judgesValidationError(this.judges); },
                 enumerable: true,
                 configurable: true
             });
-            Controller.$inject = ["$wb", "$routeParams"];
+            Object.defineProperty(Controller.prototype, "canAdd", {
+                get: function () { return this.judges.length < RPCalculator.maxJudges; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.prototype.add = function () {
+                if (!angular.isArray(this.worksheet.judges))
+                    this.worksheet.judges = [];
+                this.judges.push({ name: null });
+            };
+            Object.defineProperty(Controller.prototype, "canRemove", {
+                get: function () { return this.judges.length > 3; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.prototype.remove = function (index) { this.judges.splice(index, 1); };
+            Controller.prototype.moveUp = function (index) {
+                var judge = this.judges[index];
+                this.judges[index] = this.judges[index - 1];
+                this.judges[index - 1] = judge;
+            };
+            Controller.prototype.moveDown = function (index) {
+                var judge = this.judges[index];
+                this.judges[index] = this.judges[index + 1];
+                this.judges[index + 1] = judge;
+            };
             return Controller;
         }(Worksheet.BaseController));
         Judges.Controller = Controller;

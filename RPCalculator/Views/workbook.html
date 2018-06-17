@@ -1,8 +1,9 @@
 ﻿<div class="container">
     <div class="card">
         <div class="card-header text-center">
-            <form name="form" ng-submit="$ctrl.save()" autocomplete="off">
-                <input name="title" type="text" placeholder="Workbook Title" ng-model="$ctrl.$wb.title" class="form-control text-center" ng-class="vclass(form.title, null)" required />
+            <form name="form" autocomplete="off">
+                <input name="title" type="text" placeholder="Workbook Title" ng-model="$ctrl.$wb.title"
+                       class="form-control text-center" ng-class="vclass(form.title, null)" required />
             </form>
         </div>
         <div class="card-body" ng-if="!$ctrl.$wb.worksheets.length">

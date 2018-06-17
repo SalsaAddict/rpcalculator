@@ -1,3 +1,13 @@
-﻿Worksheet
+﻿<div class="container-fluid">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="{{$ctrl.judges.length}}">Judges</th>
 
-{{$ctrl.validateJudges}}:{{$ctrl.judgesValidationError}}
+            </tr>
+            <tr>
+                <th ng-repeat="judge in $ctrl.judges track by $index" judge-repeater="$ctrl.judges" ng-bind="$judge.name"></th>
+            </tr>
+        </thead>
+    </table>
+</div>
