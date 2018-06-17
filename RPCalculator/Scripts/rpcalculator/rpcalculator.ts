@@ -64,7 +64,14 @@ namespace RPCalculator {
         return false;
     }
     export function ifBlank<T>(value: T, defaultValue: T): T { return (isBlank(value)) ? defaultValue : value; }
+    export function swap(array: any[], index1: number, index2: number): void {
+        let temp: any = array[index1];
+        array[index1] = array[index2];
+        array[index2] = temp;
+    }
 }
+
+let xyz: Array<string>;
 
 namespace RPCalculator {
     "use strict";
@@ -111,55 +118,63 @@ namespace RPCalculator {
     }
     export namespace Worksheet {
         export abstract class BaseController {
-            static $inject: string[] = ["$scope", "$wb", "$routeParams"];
+            static $inject: string[] = ["$scope", "$wb", "$route", "$routeParams", "$window"];
             constructor(
                 protected $scope: angular.IScope,
                 protected $wb: Workbook.Service,
-                protected $routeParams: angular.route.IRouteParamsService) {
+                protected $route: angular.route.IRouteService,
+                protected $routeParams: angular.route.IRouteParamsService,
+                protected $window: angular.IWindowService) {
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index])) this.$wb.go();
+                $scope.$on("$destroy", $scope.$on("$routeChangeStart", ($event: angular.IAngularEvent): void => {
+                    if (this.form && this.form.$dirty) {
+                        $event.preventDefault();
+                        this.$window.alert("Please save or undo your changes before continuing.");
+                    }
+                }));
             }
             public get form(): angular.IFormController { return this.$scope["form"]; }
             public get index(): number { return toInt(this.$routeParams["index"]); }
             public get worksheet(): IWorksheet { return this.$wb.worksheets[this.index]; }
-            public judges: IJudge[] = angular.copy(this.worksheet.judges);
+            protected _judges: IJudge[] = angular.copy(this.worksheet.judges);
+            public get judges(): IJudge[] { return this._judges; }
         }
         export class Controller extends BaseController {
-            constructor($scope: angular.IScope, $wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) {
-                super($scope, $wb, $routeParams);
-                if (!$wb.validateJudges(this.worksheet.judges)) $wb.go("/judges", this.index);
-            }
-            public get judges(): IJudge[] {
-                if (!angular.isArray(this.worksheet.judges)) this.worksheet.judges = [];
-                return this.worksheet.judges;
-            }
         }
     }
     export namespace Judges {
         export class Controller extends Worksheet.BaseController {
-            constructor($scope: angular.IScope, $wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) {
-                super($scope, $wb, $routeParams);
+            public get valid(): boolean { return this.form.$valid && this.$wb.validateJudges(this.judges); }
+            public get invalid(): boolean { return !this.valid; }
+            public get error(): string {
+                if (this.form.$error.required) return "Every judge must be given a name."
+                return this.$wb.judgesValidationError(this.judges);
             }
-            public get invalid(): boolean { return !this.$wb.validateJudges(this.judges); }
-            public get error(): string { return this.$wb.judgesValidationError(this.judges); }
             public get canAdd(): boolean { return this.judges.length < maxJudges; }
             public add(): void {
                 if (!angular.isArray(this.worksheet.judges)) this.worksheet.judges = [];
                 this.judges.push({ name: null });
+                this.form.$setDirty();
             }
             public get canRemove(): boolean { return this.judges.length > 3; }
-            public remove(index): void { this.judges.splice(index, 1); }
+            public remove(index): void {
+                this.judges.splice(index, 1);
+                this.form.$setDirty();
+            }
             public moveUp(index: number): void {
-                let judge: IJudge = this.judges[index];
-                this.judges[index] = this.judges[index - 1];
-                this.judges[index - 1] = judge;
+                swap(this.judges, index, index - 1);
+                this.form.$setDirty();
             }
             public moveDown(index: number): void {
-                let judge: IJudge = this.judges[index];
-                this.judges[index] = this.judges[index + 1];
-                this.judges[index + 1] = judge;
+                swap(this.judges, index, index + 1);
+                this.form.$setDirty();
             }
             public save(): void {
-                this.worksheet.judges = this.judges;
+                this.$wb.worksheets[this.index].judges = this.judges;
+                this.form.$setPristine();
+            }
+            public undo(): void {
+                this._judges = angular.copy(this.worksheet.judges);
                 this.form.$setPristine();
             }
         }

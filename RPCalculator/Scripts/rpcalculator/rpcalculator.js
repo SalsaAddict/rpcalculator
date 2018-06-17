@@ -74,7 +74,14 @@ var RPCalculator;
     RPCalculator.isBlank = isBlank;
     function ifBlank(value, defaultValue) { return (isBlank(value)) ? defaultValue : value; }
     RPCalculator.ifBlank = ifBlank;
+    function swap(array, index1, index2) {
+        var temp = array[index1];
+        array[index1] = array[index2];
+        array[index2] = temp;
+    }
+    RPCalculator.swap = swap;
 })(RPCalculator || (RPCalculator = {}));
+var xyz;
 (function (RPCalculator) {
     "use strict";
     function toInt(value) {
@@ -150,13 +157,28 @@ var RPCalculator;
     var Worksheet;
     (function (Worksheet) {
         var BaseController = /** @class */ (function () {
-            function BaseController($wb, $routeParams) {
+            function BaseController($scope, $wb, $route, $routeParams, $window) {
+                var _this = this;
+                this.$scope = $scope;
                 this.$wb = $wb;
+                this.$route = $route;
                 this.$routeParams = $routeParams;
-                this.judges = angular.copy(this.worksheet.judges);
+                this.$window = $window;
+                this._judges = angular.copy(this.worksheet.judges);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index]))
                     this.$wb.go();
+                $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {
+                    if (_this.form && _this.form.$dirty) {
+                        $event.preventDefault();
+                        _this.$window.alert("Please save or undo your changes before continuing.");
+                    }
+                }));
             }
+            Object.defineProperty(BaseController.prototype, "form", {
+                get: function () { return this.$scope["form"]; },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(BaseController.prototype, "index", {
                 get: function () { return toInt(this.$routeParams["index"]); },
                 enumerable: true,
@@ -167,27 +189,20 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            BaseController.$inject = ["$wb", "$routeParams"];
+            Object.defineProperty(BaseController.prototype, "judges", {
+                get: function () { return this._judges; },
+                enumerable: true,
+                configurable: true
+            });
+            BaseController.$inject = ["$scope", "$wb", "$route", "$routeParams", "$window"];
             return BaseController;
         }());
         Worksheet.BaseController = BaseController;
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
-            function Controller($wb, $routeParams) {
-                var _this = _super.call(this, $wb, $routeParams) || this;
-                if (!$wb.validateJudges(_this.worksheet.judges))
-                    $wb.go("/judges", _this.index);
-                return _this;
+            function Controller() {
+                return _super !== null && _super.apply(this, arguments) || this;
             }
-            Object.defineProperty(Controller.prototype, "judges", {
-                get: function () {
-                    if (!angular.isArray(this.worksheet.judges))
-                        this.worksheet.judges = [];
-                    return this.worksheet.judges;
-                },
-                enumerable: true,
-                configurable: true
-            });
             return Controller;
         }(BaseController));
         Worksheet.Controller = Controller;
@@ -196,16 +211,25 @@ var RPCalculator;
     (function (Judges) {
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
-            function Controller($wb, $routeParams) {
-                return _super.call(this, $wb, $routeParams) || this;
+            function Controller() {
+                return _super !== null && _super.apply(this, arguments) || this;
             }
+            Object.defineProperty(Controller.prototype, "valid", {
+                get: function () { return this.form.$valid && this.$wb.validateJudges(this.judges); },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Controller.prototype, "invalid", {
-                get: function () { return !this.$wb.validateJudges(this.judges); },
+                get: function () { return !this.valid; },
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(Controller.prototype, "error", {
-                get: function () { return this.$wb.judgesValidationError(this.judges); },
+                get: function () {
+                    if (this.form.$error.required)
+                        return "Every judge must be given a name.";
+                    return this.$wb.judgesValidationError(this.judges);
+                },
                 enumerable: true,
                 configurable: true
             });
@@ -218,22 +242,32 @@ var RPCalculator;
                 if (!angular.isArray(this.worksheet.judges))
                     this.worksheet.judges = [];
                 this.judges.push({ name: null });
+                this.form.$setDirty();
             };
             Object.defineProperty(Controller.prototype, "canRemove", {
                 get: function () { return this.judges.length > 3; },
                 enumerable: true,
                 configurable: true
             });
-            Controller.prototype.remove = function (index) { this.judges.splice(index, 1); };
+            Controller.prototype.remove = function (index) {
+                this.judges.splice(index, 1);
+                this.form.$setDirty();
+            };
             Controller.prototype.moveUp = function (index) {
-                var judge = this.judges[index];
-                this.judges[index] = this.judges[index - 1];
-                this.judges[index - 1] = judge;
+                RPCalculator.swap(this.judges, index, index - 1);
+                this.form.$setDirty();
             };
             Controller.prototype.moveDown = function (index) {
-                var judge = this.judges[index];
-                this.judges[index] = this.judges[index + 1];
-                this.judges[index + 1] = judge;
+                RPCalculator.swap(this.judges, index, index + 1);
+                this.form.$setDirty();
+            };
+            Controller.prototype.save = function () {
+                this.$wb.worksheets[this.index].judges = this.judges;
+                this.form.$setPristine();
+            };
+            Controller.prototype.undo = function () {
+                this._judges = angular.copy(this.worksheet.judges);
+                this.form.$setPristine();
             };
             return Controller;
         }(Worksheet.BaseController));

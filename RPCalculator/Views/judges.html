@@ -1,4 +1,14 @@
 ﻿<div class="container">
+    <ng-switch on="$ctrl.valid">
+        <div class="alert alert-success" ng-switch-when="true">
+            <i class="fa fa-fw fa-check-circle"></i>
+            <span>The judges are valid.</span>
+        </div>
+        <div class="alert alert-danger" ng-switch-when="false">
+            <i class="fa fa-fw fa-warning"></i>
+            <span ng-bind="$ctrl.error"></span>
+        </div>
+    </ng-switch>
     <table class="table table-bordered was-validated" ng-form="form">
         <thead>
             <tr>
@@ -6,10 +16,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="judge in $ctrl.judges track by $index">
+            <tr ng-repeat="judge in $ctrl.judges">
                 <th>#{{$index + 1}}</th>
                 <td>
                     <input type="text" placeholder="Name" ng-model="judge.name" class="form-control" required />
+                    {{judge}}
                 </td>
                 <td class="text-nowrap" style="width: 1px !important">
                     <div class="btn-group btn-group-sm">
@@ -33,27 +44,25 @@
                 <td></td>
                 <td>
                     <fieldset ng-disabled="!form.$dirty">
-                        <button type="button" class="btn btn-warning">
-                            <span>Undo</span>
+                        <button type="button" class="btn" ng-class="{ 'btn-warning': form.$dirty }" ng-click="$ctrl.undo()">
                             <i class="fa fa-fw fa-undo"></i>
+                            <span>Undo</span>
                         </button>
-                        <button type="button" class="btn btn-success">
-                            <span>Save</span>
+                        <button type="button" class="btn" ng-class="{ 'btn-success': form.$dirty && $ctrl.valid }" ng-disabled="$ctrl.invalid" ng-click="$ctrl.save()">
                             <i class="fa fa-fw fa-save"></i>
+                            <span>Save</span>
                         </button>
                     </fieldset>
                 </td>
                 <td>
                     <button type="button" class="btn" ng-click="$ctrl.add()" title="Add New Judge" ng-disabled="!$ctrl.canAdd" ng-class="{ 'btn-primary': $ctrl.canAdd }">
-                        <span>Add New Judge</span>
                         <i class="fa fa-fw fa-mortar-board"></i>
+                        <span>Add</span>
                     </button>
                 </td>
             </tr>
         </tfoot>
     </table>
-    <div class="alert alert-danger" ng-if="$ctrl.invalid">
-        <i class="fa fa-fw fa-warning"></i>
-        <span ng-bind="$ctrl.error"></span>
-    </div>
+    <pre ng-bind="$ctrl.judges"></pre>
+    <pre ng-bind="$ctrl.worksheet.judges"></pre>
 </div>
