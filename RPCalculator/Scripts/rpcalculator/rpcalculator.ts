@@ -111,19 +111,21 @@ namespace RPCalculator {
     }
     export namespace Worksheet {
         export abstract class BaseController {
-            static $inject: string[] = ["$wb", "$routeParams"];
+            static $inject: string[] = ["$scope", "$wb", "$routeParams"];
             constructor(
+                protected $scope: angular.IScope,
                 protected $wb: Workbook.Service,
                 protected $routeParams: angular.route.IRouteParamsService) {
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index])) this.$wb.go();
             }
+            public get form(): angular.IFormController { return this.$scope["form"]; }
             public get index(): number { return toInt(this.$routeParams["index"]); }
             public get worksheet(): IWorksheet { return this.$wb.worksheets[this.index]; }
             public judges: IJudge[] = angular.copy(this.worksheet.judges);
         }
         export class Controller extends BaseController {
-            constructor($wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) {
-                super($wb, $routeParams);
+            constructor($scope: angular.IScope, $wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) {
+                super($scope, $wb, $routeParams);
                 if (!$wb.validateJudges(this.worksheet.judges)) $wb.go("/judges", this.index);
             }
             public get judges(): IJudge[] {
@@ -134,7 +136,9 @@ namespace RPCalculator {
     }
     export namespace Judges {
         export class Controller extends Worksheet.BaseController {
-            constructor($wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) { super($wb, $routeParams); }
+            constructor($scope: angular.IScope, $wb: Workbook.Service, $routeParams: angular.route.IRouteParamsService) {
+                super($scope, $wb, $routeParams);
+            }
             public get invalid(): boolean { return !this.$wb.validateJudges(this.judges); }
             public get error(): string { return this.$wb.judgesValidationError(this.judges); }
             public get canAdd(): boolean { return this.judges.length < maxJudges; }
@@ -153,6 +157,10 @@ namespace RPCalculator {
                 let judge: IJudge = this.judges[index];
                 this.judges[index] = this.judges[index + 1];
                 this.judges[index + 1] = judge;
+            }
+            public save(): void {
+                this.worksheet.judges = this.judges;
+                this.form.$setPristine();
             }
         }
     }
