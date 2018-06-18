@@ -17,6 +17,7 @@ module.config(["$routeProvider", function ($routeProvider) {
             .when("/workbook", { templateUrl: "Views/workbook.html", controller: RPCalculator.Workbook.Controller, controllerAs: "$ctrl" })
             .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Worksheet.Controller, controllerAs: "$ctrl" })
             .when("/judges/:index", { templateUrl: "Views/judges.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
+            .when("/competitors/:index", { templateUrl: "Views/competitors.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
             .otherwise({ redirectTo: "/workbook" })
             .caseInsensitiveMatch = true;
     }]);
@@ -67,7 +68,7 @@ var RPCalculator;
             return angular.toJson(value) === angular.toJson({});
         if (String(value).trim() === "")
             return true;
-        if (isNaN(value))
+        if (value === NaN)
             return true;
         return false;
     }
@@ -131,7 +132,7 @@ var xyz;
                 enumerable: true,
                 configurable: true
             });
-            Service.prototype.validateJudges = function (judges) { return !this.judgesValidationError(judges); };
+            Service.prototype.validateJudges = function (judges) { return RPCalculator.isBlank(this.judgesValidationError(judges)); };
             Service.prototype.judgesValidationError = function (judges) {
                 if (RPCalculator.isBlank(judges) || !angular.isArray(judges) || judges.length < 3)
                     return "There must be at least 3 judges";
@@ -139,8 +140,37 @@ var xyz;
                     return "There cannot be more than " + RPCalculator.maxJudges + " judges";
                 if (judges.length % 2 === 0)
                     return "There must be an odd number of judges";
+                var names = [];
+                for (var i = 0; i < judges.length; i++) {
+                    if (RPCalculator.isBlank(judges[i]) || RPCalculator.isBlank(judges[i].name))
+                        return "Each judge must have a name";
+                    if (names.indexOf(judges[i].name) >= 0)
+                        return "Each judge must have a unique name";
+                    names.push(judges[i].name);
+                }
                 return;
             };
+            Service.prototype.competitorsValidationError = function (competitors) {
+                if (RPCalculator.isBlank(competitors) || !angular.isArray(competitors) || competitors.length < 2)
+                    return "There must be at least 2 competitors";
+                if (competitors.length > RPCalculator.maxCompetitors)
+                    return "There cannot be more than " + RPCalculator.maxCompetitors + " competitors";
+                var ids = [], names = [];
+                for (var i = 0; i < competitors.length; i++) {
+                    if (RPCalculator.isBlank(competitors[i]) || RPCalculator.isBlank(competitors[i].id))
+                        return "Each competitor must have a number";
+                    if (ids.indexOf(competitors[i].id) >= 0)
+                        return "Each competitor must have a unique number";
+                    if (RPCalculator.isBlank(competitors[i].name))
+                        return "Each competitor must have a name";
+                    if (names.indexOf(competitors[i].name) >= 0)
+                        return "Each competitor must have a unique name";
+                    ids.push(competitors[i].id);
+                    names.push(competitors[i].name);
+                }
+                return;
+            };
+            Service.prototype.validateCompetitors = function (competitors) { return RPCalculator.isBlank(this.competitorsValidationError(competitors)); };
             Service.$inject = ["$localStorage", "$location"];
             return Service;
         }());
@@ -165,6 +195,7 @@ var xyz;
                 this.$routeParams = $routeParams;
                 this.$window = $window;
                 this.judges = angular.copy(this.worksheet.judges);
+                this.competitors = angular.copy(this.worksheet.competitors);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index]))
                     this.$wb.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {
@@ -210,7 +241,7 @@ var xyz;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             Object.defineProperty(Controller.prototype, "valid", {
-                get: function () { return this.form.$valid && this.$wb.validateJudges(this.judges); },
+                get: function () { return this.$wb.validateJudges(this.judges); },
                 enumerable: true,
                 configurable: true
             });
@@ -219,12 +250,8 @@ var xyz;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(Controller.prototype, "error", {
-                get: function () {
-                    if (this.form.$error.required)
-                        return "Every judge must be given a name.";
-                    return this.$wb.judgesValidationError(this.judges);
-                },
+            Object.defineProperty(Controller.prototype, "message", {
+                get: function () { return RPCalculator.ifBlank(this.$wb.judgesValidationError(this.judges), "The judges are valid"); },
                 enumerable: true,
                 configurable: true
             });
@@ -268,6 +295,69 @@ var xyz;
         }(Worksheet.BaseController));
         Judges.Controller = Controller;
     })(Judges = RPCalculator.Judges || (RPCalculator.Judges = {}));
+    var Competitors;
+    (function (Competitors) {
+        var Controller = /** @class */ (function (_super) {
+            __extends(Controller, _super);
+            function Controller() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Object.defineProperty(Controller.prototype, "valid", {
+                get: function () { return this.$wb.validateCompetitors(this.competitors); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "invalid", {
+                get: function () { return !this.valid; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "message", {
+                get: function () { return RPCalculator.ifBlank(this.$wb.competitorsValidationError(this.competitors), "The competitors are valid"); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "canAdd", {
+                get: function () { return this.competitors.length < RPCalculator.maxCompetitors; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.prototype.add = function () {
+                if (!angular.isArray(this.worksheet.competitors))
+                    this.worksheet.competitors = [];
+                var id = this.competitors.push({ id: null, name: null });
+                this.competitors[id - 1].id = id;
+                this.form.$setDirty();
+            };
+            Object.defineProperty(Controller.prototype, "canRemove", {
+                get: function () { return this.competitors.length > 2; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.prototype.remove = function (index) {
+                this.competitors.splice(index, 1);
+                this.form.$setDirty();
+            };
+            Controller.prototype.moveUp = function (index) {
+                RPCalculator.swap(this.competitors, index, index - 1);
+                this.form.$setDirty();
+            };
+            Controller.prototype.moveDown = function (index) {
+                RPCalculator.swap(this.competitors, index, index + 1);
+                this.form.$setDirty();
+            };
+            Controller.prototype.save = function () {
+                this.$wb.worksheets[this.index].competitors = angular.copy(this.competitors);
+                this.form.$setPristine();
+            };
+            Controller.prototype.undo = function () {
+                this.competitors = angular.copy(this.worksheet.competitors);
+                this.form.$setPristine();
+            };
+            return Controller;
+        }(Worksheet.BaseController));
+        Competitors.Controller = Controller;
+    })(Competitors = RPCalculator.Competitors || (RPCalculator.Competitors = {}));
 })(RPCalculator || (RPCalculator = {}));
 module.service("$wb", RPCalculator.Workbook.Service);
 //# sourceMappingURL=rpcalculator.js.map
