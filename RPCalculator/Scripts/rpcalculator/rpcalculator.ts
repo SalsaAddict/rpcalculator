@@ -54,7 +54,7 @@ namespace RPCalculator {
     export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
     export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; }
     export interface IJudge { name: string; }
-    export interface ICompetitor { id: number; name: string; }
+    export interface ICompetitor { id: number; name: string; scores: number[]; }
     export function isBlank(value: any): boolean {
         if (angular.isUndefined(value)) return true;
         if (value === null) return true;
@@ -70,9 +70,9 @@ namespace RPCalculator {
         array[index1] = array[index2];
         array[index2] = temp;
     }
+    export function swapUp(array: any[], index: number): void { swap(array, index, index - 1); }
+    export function swapDown(array: any[], index: number): void { swap(array, index, index + 1); }
 }
-
-let xyz: Array<string>;
 
 namespace RPCalculator {
     "use strict";
@@ -155,58 +155,63 @@ namespace RPCalculator {
                     }
                 }));
             }
+            public goToWorksheet(): void { this.$wb.go("/worksheets", this.index); }
             public get form(): angular.IFormController { return this.$scope["form"]; }
             public get index(): number { return toInt(this.$routeParams["index"]); }
             public get worksheet(): IWorksheet { return this.$wb.worksheets[this.index]; }
-            public judges: IJudge[] = angular.copy(this.worksheet.judges);
-            public competitors: ICompetitor[] = angular.copy(this.worksheet.competitors);
+            public get judges(): IJudge[] { return ifBlank(this.worksheet.judges, []); }
+            public set judges(judges: IJudge[]) { this.worksheet.judges = angular.copy(ifBlank(judges, [])); }
+            public get competitors(): ICompetitor[] { return ifBlank(this.worksheet.competitors, []); }
+            public set competitors(competitors: ICompetitor[]) { this.worksheet.competitors = angular.copy(ifBlank(competitors, [])); }
+        }
+        export type PropertyType = "Judges" | "Competitors";
+        export interface IValidatorFn { (data: any[]): string; }
+        export abstract class EditController extends BaseController {
+            private property: PropertyType;
+            private min: number;
+            private max: number;
+            private get validator(): IValidatorFn { return this.$wb[this.property.toLowerCase() + "ValidationError"]; };
+            public abstract data: any[];
+            public getData(property?: PropertyType, min?: number, max?: number): any[] {
+                this.property = ifBlank(property, this.property);
+                this.min = ifBlank(min, this.min);
+                this.max = ifBlank(max, this.max);
+                return angular.copy(this[this.property.toLowerCase()]);
+            }
+            public get message(): string { return ifBlank(this.validator(this.data), this.property); }
+            public get valid(): boolean { return isBlank(this.validator(this.data)); }
+            public get invalid(): boolean { return !this.valid; }
+            public get canAdd(): boolean { return this.data.length < this.max; }
+            public abstract add(): void;
+            public get canRemove(): boolean { return this.data.length > this.min; }
+            public remove(index: number): void { this.data.splice(index, 1); this.form.$setDirty(); }
+            public moveUp(index: number): void { swapUp(this.data, index); this.form.$setDirty(); }
+            public moveDown(index: number): void { swapDown(this.data, index); this.form.$setDirty(); }
+            public save(): void { this[this.property.toLowerCase()] = angular.copy(ifBlank(this.data, [])); this.form.$setPristine(); }
+            public undo(): void { this.data = this.getData(); this.form.$setPristine(); }
         }
         export class Controller extends BaseController {
+            public scores(competitor: ICompetitor): number[] {
+                if (isBlank(competitor.scores)) competitor.scores = [];
+                return competitor.scores;
+            }
         }
     }
     export namespace Judges {
-        export class Controller extends Worksheet.BaseController {
-            public get valid(): boolean { return this.$wb.validateJudges(this.judges); }
-            public get invalid(): boolean { return !this.valid; }
-            public get message(): string { return ifBlank(this.$wb.judgesValidationError(this.judges), "The judges are valid"); }
-            public get canAdd(): boolean { return this.judges.length < maxJudges; }
-            public add(): void {
-                if (!angular.isArray(this.worksheet.judges)) this.worksheet.judges = [];
-                this.judges.push({ name: null });
-                this.form.$setDirty();
-            }
-            public get canRemove(): boolean { return this.judges.length > 3; }
-            public remove(index): void {
-                this.judges.splice(index, 1);
-                this.form.$setDirty();
-            }
-            public moveUp(index: number): void {
-                swap(this.judges, index, index - 1);
-                this.form.$setDirty();
-            }
-            public moveDown(index: number): void {
-                swap(this.judges, index, index + 1);
-                this.form.$setDirty();
-            }
-            public save(): void {
-                this.$wb.worksheets[this.index].judges = angular.copy(this.judges);
-                this.form.$setPristine();
-            }
-            public undo(): void {
-                this.judges = angular.copy(this.worksheet.judges);
-                this.form.$setPristine();
-            }
+        export class Controller extends Worksheet.EditController {
+            public data: any[] = this.getData("Judges", 3, maxJudges);
+            public add(): void { this.data.push({ name: null }); this.form.$setDirty(); }
         }
     }
     export namespace Competitors {
         export class Controller extends Worksheet.BaseController {
             public get valid(): boolean { return this.$wb.validateCompetitors(this.competitors); }
             public get invalid(): boolean { return !this.valid; }
-            public get message(): string { return ifBlank(this.$wb.competitorsValidationError(this.competitors), "The competitors are valid"); }
+            public get message(): string { return ifBlank(this.$wb.competitorsValidationError(this.competitors), "Competitors"); }
             public get canAdd(): boolean { return this.competitors.length < maxCompetitors; }
             public add(): void {
                 if (!angular.isArray(this.worksheet.competitors)) this.worksheet.competitors = [];
-                let id: number = this.competitors.push({ id: null, name: null });
+                let id: number = this.competitors.push({ id: null, name: null, scores: [] });
                 this.competitors[id - 1].id = id;
                 this.form.$setDirty();
             }
@@ -224,11 +229,11 @@ namespace RPCalculator {
                 this.form.$setDirty();
             }
             public save(): void {
-                this.$wb.worksheets[this.index].competitors = angular.copy(this.competitors);
+                this.$wb.worksheets[this.index].competitors = angular.copy(ifBlank(this.competitors, []));
                 this.form.$setPristine();
             }
             public undo(): void {
-                this.competitors = angular.copy(this.worksheet.competitors);
+                this.competitors = angular.copy(ifBlank(this.worksheet.competitors, []));
                 this.form.$setPristine();
             }
         }

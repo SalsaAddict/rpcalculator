@@ -81,8 +81,11 @@ var RPCalculator;
         array[index2] = temp;
     }
     RPCalculator.swap = swap;
+    function swapUp(array, index) { swap(array, index, index - 1); }
+    RPCalculator.swapUp = swapUp;
+    function swapDown(array, index) { swap(array, index, index + 1); }
+    RPCalculator.swapDown = swapDown;
 })(RPCalculator || (RPCalculator = {}));
-var xyz;
 (function (RPCalculator) {
     "use strict";
     function toInt(value) {
@@ -194,8 +197,6 @@ var xyz;
                 this.$route = $route;
                 this.$routeParams = $routeParams;
                 this.$window = $window;
-                this.judges = angular.copy(this.worksheet.judges);
-                this.competitors = angular.copy(this.worksheet.competitors);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index]))
                     this.$wb.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {
@@ -205,6 +206,7 @@ var xyz;
                     }
                 }));
             }
+            BaseController.prototype.goToWorksheet = function () { this.$wb.go("/worksheets", this.index); };
             Object.defineProperty(BaseController.prototype, "form", {
                 get: function () { return this.$scope["form"]; },
                 enumerable: true,
@@ -220,15 +222,82 @@ var xyz;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(BaseController.prototype, "judges", {
+                get: function () { return RPCalculator.ifBlank(this.worksheet.judges, []); },
+                set: function (judges) { this.worksheet.judges = angular.copy(RPCalculator.ifBlank(judges, [])); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(BaseController.prototype, "competitors", {
+                get: function () { return RPCalculator.ifBlank(this.worksheet.competitors, []); },
+                set: function (competitors) { this.worksheet.competitors = angular.copy(RPCalculator.ifBlank(competitors, [])); },
+                enumerable: true,
+                configurable: true
+            });
             BaseController.$inject = ["$scope", "$wb", "$route", "$routeParams", "$window"];
             return BaseController;
         }());
         Worksheet.BaseController = BaseController;
+        var EditController = /** @class */ (function (_super) {
+            __extends(EditController, _super);
+            function EditController() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Object.defineProperty(EditController.prototype, "validator", {
+                get: function () { return this.$wb[this.property.toLowerCase() + "ValidationError"]; },
+                enumerable: true,
+                configurable: true
+            });
+            ;
+            EditController.prototype.getData = function (property, min, max) {
+                this.property = RPCalculator.ifBlank(property, this.property);
+                this.min = RPCalculator.ifBlank(min, this.min);
+                this.max = RPCalculator.ifBlank(max, this.max);
+                return angular.copy(this[this.property.toLowerCase()]);
+            };
+            Object.defineProperty(EditController.prototype, "message", {
+                get: function () { return RPCalculator.ifBlank(this.validator(this.data), this.property); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(EditController.prototype, "valid", {
+                get: function () { return RPCalculator.isBlank(this.validator(this.data)); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(EditController.prototype, "invalid", {
+                get: function () { return !this.valid; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(EditController.prototype, "canAdd", {
+                get: function () { return this.data.length < this.max; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(EditController.prototype, "canRemove", {
+                get: function () { return this.data.length > this.min; },
+                enumerable: true,
+                configurable: true
+            });
+            EditController.prototype.remove = function (index) { this.data.splice(index, 1); this.form.$setDirty(); };
+            EditController.prototype.moveUp = function (index) { RPCalculator.swapUp(this.data, index); this.form.$setDirty(); };
+            EditController.prototype.moveDown = function (index) { RPCalculator.swapDown(this.data, index); this.form.$setDirty(); };
+            EditController.prototype.save = function () { this[this.property.toLowerCase()] = angular.copy(RPCalculator.ifBlank(this.data, [])); this.form.$setPristine(); };
+            EditController.prototype.undo = function () { this.data = this.getData(); this.form.$setPristine(); };
+            return EditController;
+        }(BaseController));
+        Worksheet.EditController = EditController;
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
             function Controller() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Controller.prototype.scores = function (competitor) {
+                if (RPCalculator.isBlank(competitor.scores))
+                    competitor.scores = [];
+                return competitor.scores;
+            };
             return Controller;
         }(BaseController));
         Worksheet.Controller = Controller;
@@ -238,61 +307,13 @@ var xyz;
         var Controller = /** @class */ (function (_super) {
             __extends(Controller, _super);
             function Controller() {
-                return _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.data = _this.getData("Judges", 3, RPCalculator.maxJudges);
+                return _this;
             }
-            Object.defineProperty(Controller.prototype, "valid", {
-                get: function () { return this.$wb.validateJudges(this.judges); },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Controller.prototype, "invalid", {
-                get: function () { return !this.valid; },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Controller.prototype, "message", {
-                get: function () { return RPCalculator.ifBlank(this.$wb.judgesValidationError(this.judges), "The judges are valid"); },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Controller.prototype, "canAdd", {
-                get: function () { return this.judges.length < RPCalculator.maxJudges; },
-                enumerable: true,
-                configurable: true
-            });
-            Controller.prototype.add = function () {
-                if (!angular.isArray(this.worksheet.judges))
-                    this.worksheet.judges = [];
-                this.judges.push({ name: null });
-                this.form.$setDirty();
-            };
-            Object.defineProperty(Controller.prototype, "canRemove", {
-                get: function () { return this.judges.length > 3; },
-                enumerable: true,
-                configurable: true
-            });
-            Controller.prototype.remove = function (index) {
-                this.judges.splice(index, 1);
-                this.form.$setDirty();
-            };
-            Controller.prototype.moveUp = function (index) {
-                RPCalculator.swap(this.judges, index, index - 1);
-                this.form.$setDirty();
-            };
-            Controller.prototype.moveDown = function (index) {
-                RPCalculator.swap(this.judges, index, index + 1);
-                this.form.$setDirty();
-            };
-            Controller.prototype.save = function () {
-                this.$wb.worksheets[this.index].judges = angular.copy(this.judges);
-                this.form.$setPristine();
-            };
-            Controller.prototype.undo = function () {
-                this.judges = angular.copy(this.worksheet.judges);
-                this.form.$setPristine();
-            };
+            Controller.prototype.add = function () { this.data.push({ name: null }); this.form.$setDirty(); };
             return Controller;
-        }(Worksheet.BaseController));
+        }(Worksheet.EditController));
         Judges.Controller = Controller;
     })(Judges = RPCalculator.Judges || (RPCalculator.Judges = {}));
     var Competitors;
@@ -313,7 +334,7 @@ var xyz;
                 configurable: true
             });
             Object.defineProperty(Controller.prototype, "message", {
-                get: function () { return RPCalculator.ifBlank(this.$wb.competitorsValidationError(this.competitors), "The competitors are valid"); },
+                get: function () { return RPCalculator.ifBlank(this.$wb.competitorsValidationError(this.competitors), "Competitors"); },
                 enumerable: true,
                 configurable: true
             });
@@ -325,7 +346,7 @@ var xyz;
             Controller.prototype.add = function () {
                 if (!angular.isArray(this.worksheet.competitors))
                     this.worksheet.competitors = [];
-                var id = this.competitors.push({ id: null, name: null });
+                var id = this.competitors.push({ id: null, name: null, scores: [] });
                 this.competitors[id - 1].id = id;
                 this.form.$setDirty();
             };
@@ -347,11 +368,11 @@ var xyz;
                 this.form.$setDirty();
             };
             Controller.prototype.save = function () {
-                this.$wb.worksheets[this.index].competitors = angular.copy(this.competitors);
+                this.$wb.worksheets[this.index].competitors = angular.copy(RPCalculator.ifBlank(this.competitors, []));
                 this.form.$setPristine();
             };
             Controller.prototype.undo = function () {
-                this.competitors = angular.copy(this.worksheet.competitors);
+                this.competitors = angular.copy(RPCalculator.ifBlank(this.worksheet.competitors, []));
                 this.form.$setPristine();
             };
             return Controller;
