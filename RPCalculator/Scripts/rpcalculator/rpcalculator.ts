@@ -136,8 +136,7 @@ namespace RPCalculator {
             public get form(): angular.IFormController { return this.$scope["form"]; }
             public get index(): number { return toInt(this.$routeParams["index"]); }
             public get worksheet(): IWorksheet { return this.$wb.worksheets[this.index]; }
-            protected _judges: IJudge[] = angular.copy(this.worksheet.judges);
-            public get judges(): IJudge[] { return this._judges; }
+            public judges: IJudge[] = angular.copy(this.worksheet.judges);
         }
         export class Controller extends BaseController {
         }
@@ -170,11 +169,11 @@ namespace RPCalculator {
                 this.form.$setDirty();
             }
             public save(): void {
-                this.$wb.worksheets[this.index].judges = this.judges;
+                this.$wb.worksheets[this.index].judges = angular.copy(this.judges);
                 this.form.$setPristine();
             }
             public undo(): void {
-                this._judges = angular.copy(this.worksheet.judges);
+                this.judges = angular.copy(this.worksheet.judges);
                 this.form.$setPristine();
             }
         }

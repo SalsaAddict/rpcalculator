@@ -164,7 +164,7 @@ var xyz;
                 this.$route = $route;
                 this.$routeParams = $routeParams;
                 this.$window = $window;
-                this._judges = angular.copy(this.worksheet.judges);
+                this.judges = angular.copy(this.worksheet.judges);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index]))
                     this.$wb.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {
@@ -186,11 +186,6 @@ var xyz;
             });
             Object.defineProperty(BaseController.prototype, "worksheet", {
                 get: function () { return this.$wb.worksheets[this.index]; },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(BaseController.prototype, "judges", {
-                get: function () { return this._judges; },
                 enumerable: true,
                 configurable: true
             });
@@ -262,11 +257,11 @@ var xyz;
                 this.form.$setDirty();
             };
             Controller.prototype.save = function () {
-                this.$wb.worksheets[this.index].judges = this.judges;
+                this.$wb.worksheets[this.index].judges = angular.copy(this.judges);
                 this.form.$setPristine();
             };
             Controller.prototype.undo = function () {
-                this._judges = angular.copy(this.worksheet.judges);
+                this.judges = angular.copy(this.worksheet.judges);
                 this.form.$setPristine();
             };
             return Controller;
