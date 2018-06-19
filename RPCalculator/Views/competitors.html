@@ -1,62 +1,11 @@
-﻿<div class="container">
-    <div class="card" ng-class="{ 'border-success': $ctrl.valid, 'border-danger': $ctrl.invalid }" ng-form="form">
-        <h5 class="card-header text-white" ng-class="{ 'bg-success': $ctrl.valid, 'bg-danger': $ctrl.invalid }">
-            <i class="fa fa-fw" ng-class="{ 'fa-check-circle': $ctrl.valid, 'fa-warning': $ctrl.invalid }"></i>
-            <span>{{$ctrl.message}}</span>
-        </h5>
-        <div class="card-body">
-            <div class="d-flex p-2 justify-content-between" ng-repeat="competitor in $ctrl.competitors">
-                <div class="btn-group flex-shrink-1">
-                    <button type="button" class="btn btn-secondary" ng-click="$ctrl.moveUp($index)" ng-disabled="$first" title="Move Up">
-                        <i class="fa fa-fw fa-caret-up"></i>
-                    </button>
-                    <button type="button" class="btn btn-secondary" ng-click="$ctrl.moveDown($index)" ng-disabled="$last" title="Move Down">
-                        <i class="fa fa-fw fa-caret-down"></i>
-                    </button>
-                </div>
-                <div class="flex-shrink-1 ml-2">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><strong>#</strong></span>
-                        </div>
-                        <input type="text" placeholder="#" ng-model="competitor.id" class="form-control text-center" tabindex="{{$index * 2 + 1}}" />
-                    </div>
-                </div>
-                <div class="flex-grow-1 ml-2">
-                    <input type="text" placeholder="Name" ng-model="competitor.name" class="form-control" tabindex="{{$index + 1}}" />
-                </div>
-                <div class="flex-shrink-1 ml-2">
-                    <button type="button" class="btn" ng-class="{ 'btn-danger': $ctrl.canRemove }" ng-click="$ctrl.remove($index)" title="Remove Competitor" ng-disabled="!$ctrl.canRemove">
-                        <i class="fa fa-fw fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="d-flex p-2 justify-content-between">
-                <div>
-                    <button type="button" class="btn" ng-click="$ctrl.add()" title="Add New Competitor" ng-disabled="!$ctrl.canAdd" ng-class="{ 'btn-secondary': $ctrl.canAdd }">
-                        <i class="fa fa-fw fa-trophy"></i>
-                        <span>Add New Competitor</span>
-                    </button>
-                </div>
-                <div ng-switch="form.$dirty">
-                    <div ng-switch-when="false">
-                        <button type="button" class="btn btn-primary" ng-class="{ 'btn-warning': form.$dirty }" ng-click="$ctrl.goToWorksheet()">
-                            <i class="fa fa-fw fa-table"></i>
-                            <span>Worksheet</span>
-                        </button>
-                    </div>
-                    <div ng-switch-when="true">
-                        <button type="button" class="btn" ng-class="{ 'btn-warning': form.$dirty }" ng-click="$ctrl.undo()">
-                            <i class="fa fa-fw fa-undo"></i>
-                            <span>Undo</span>
-                        </button>
-                        <button type="button" class="btn" ng-class="{ 'btn-success': form.$dirty && $ctrl.valid }" ng-disabled="$ctrl.invalid" ng-click="$ctrl.save()">
-                            <i class="fa fa-fw fa-save"></i>
-                            <span>Save</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+﻿<div class="flex-shrink-1 ml-2">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><strong>#</strong></span>
         </div>
+        <input type="text" placeholder="#" ng-model="row.id" class="form-control text-center" integer />
     </div>
+</div>
+<div class="flex-grow-1 ml-2">
+    <input type="text" placeholder="Name" ng-model="row.name" class="form-control" />
 </div>

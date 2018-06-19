@@ -1,0 +1,33 @@
+﻿<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2" class="align-middle">Results</th>
+                <th colspan="2" rowspan="2" class="align-middle">Competitors</th>
+                <th colspan="{{$ctrl.competitors.length}}" class="align-middle">Tally</th>
+            </tr>
+            <tr>
+                <th ng-repeat="competitor in $ctrl.competitors" class="align-middle text-nowrap">1-{{$index + 1}}</th>
+            </tr>
+        </thead>
+        <tbody ng-form="form">
+            <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank'">
+                <th class="h3 align-middle">
+                    <span class="badge badge-danger">{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
+                </th>
+                <th class="h4 text-dark align-middle">#{{competitor.id}}</th>
+                <th class="h4 text-dark align-middle">{{competitor.name}}</th>
+                <td ng-repeat="item in $ctrl.competitors" class="align-middle">
+                    <ng-switch on="!!competitor.tally[$index * 2]">
+                        <div ng-switch-when="true">
+                            <strong>{{-competitor.tally[$index * 2]}}</strong>
+                            <br />
+                            <small>({{competitor.tally[$index * 2 + 1]}})</small>
+                        </div>
+                        <small ng-switch-when="false" class="text-muted">No<br />Majority</small>
+                    </ng-switch>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

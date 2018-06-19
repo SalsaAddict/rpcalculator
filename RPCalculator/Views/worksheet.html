@@ -1,33 +1,18 @@
 ﻿<div class="container-fluid">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th colspan="2" rowspan="2">
-                    <a ng-href="#!/competitors/{{$ctrl.index}}" class="btn btn-secondary">
-                        <i class="fa fa-fw fa-trophy"></i>
-                        <span>Competitors</span>
-                    </a>
-                </th>
-                <th colspan="{{$ctrl.judges.length}}">
-                    <a ng-href="#!/judges/{{$ctrl.index}}" class="btn btn-secondary">
-                        <i class="fa fa-fw fa-mortar-board"></i>
-                        <span>Judges</span>
-                    </a>
-                </th>
-            </tr>
-            <tr>
-                <th ng-repeat="judge in $ctrl.judges">{{judge.name}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="competitor in $ctrl.competitors">
-                <th>#{{competitor.id}}</th>
-                <th>{{competitor.name}}</th>
-                <td ng-repeat="judge in $ctrl.judges">
-                    <input type="text" class="form-control text-center" ng-model="$ctrl.scores(competitor)[$index]" />
-                </td>
-                <td>{{competitor.scores}}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card text-center" ng-class="{ 'border-success': form.$valid, 'border-danger': form.$invalid }" ng-form="form">
+        <h5 class="card-header text-white text-left" ng-class="{ 'bg-success': form.$valid, 'bg-danger':form.$invalid }" ng-if="form.$invalid">
+            <i class="fa fa-fw" ng-class="{ 'fa-check-circle': form.$valid, 'fa-warning': form.$invalid }"></i>
+            <span>{{$ctrl.message}}</span>
+        </h5>
+        <div class="card-header" ng-if="form.$valid">
+            <ul class="nav nav-tabs nav-fill card-header-tabs">
+                <li class="nav-item" ng-repeat="tab in $ctrl.tabs">
+                    <a class="nav-link" ng-class="{ 'active': tab === $ctrl.tab }" href="#" ng-click="$ctrl.setTab(tab, $event)">{{tab}}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <ng-include src="$ctrl.templateUrl"></ng-include>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,35 @@
+﻿<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2" class="align-middle">Competitors</th>
+                <th colspan="{{$ctrl.judges.length}}" class="align-middle">Judges</th>
+                <th colspan="{{$ctrl.competitors.length}}" class="align-middle">Tally</th>
+                <th rowspan="2" class="align-middle">Results</th>
+            </tr>
+            <tr>
+                <th ng-repeat="judge in $ctrl.judges" class="align-middle text-nowrap">#{{$index + 1}}</th>
+                <th ng-repeat="competitor in $ctrl.competitors" class="align-middle text-nowrap">1-{{$index + 1}}</th>
+            </tr>
+        </thead>
+        <tbody ng-form="form">
+            <tr ng-repeat="competitor in $ctrl.competitors">
+                <th class="align-middle">#{{competitor.id}}</th>
+                <td class="align-middle" ng-repeat="judge in $ctrl.judges">{{competitor.scores[$index]}}</td>
+                <td ng-repeat="item in $ctrl.competitors" class="align-middle">
+                    <ng-switch on="!!competitor.tally[$index * 2]">
+                        <div ng-switch-when="true">
+                            <strong>{{-competitor.tally[$index * 2]}}</strong>
+                            <br />
+                            <small>({{competitor.tally[$index * 2 + 1]}})</small>
+                        </div>
+                        <small ng-switch-when="false" class="text-muted">No<br />Majority</small>
+                    </ng-switch>
+                </td>
+                <th class="h4 text-dark align-middle">
+                    <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+</div>

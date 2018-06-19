@@ -2,14 +2,14 @@
 /// <reference path="../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../typings/ngstorage/ngstorage.d.ts" />
 
-let module: angular.IModule = angular.module("rpcalc", ["ngRoute", "ngMessages", "ngStorage"]);
+let module: angular.IModule = angular.module("rpcalc", ["ngRoute", "ngStorage"]);
 
 module.config(["$routeProvider", function ($routeProvider: angular.route.IRouteProvider) {
     $routeProvider
         .when("/workbook", { templateUrl: "Views/workbook.html", controller: RPCalculator.Workbook.Controller, controllerAs: "$ctrl" })
-        .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Worksheet.Controller, controllerAs: "$ctrl" })
-        .when("/judges/:index", { templateUrl: "Views/judges.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
-        .when("/competitors/:index", { templateUrl: "Views/competitors.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
+        .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
+        .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
+        .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
         .otherwise({ redirectTo: "/workbook" })
         .caseInsensitiveMatch = true;
 }]);
@@ -54,7 +54,7 @@ namespace RPCalculator {
     export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
     export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; }
     export interface IJudge { name: string; }
-    export interface ICompetitor { id: number; name: string; scores: number[]; }
+    export interface ICompetitor { id: number; name: string; scores: number[]; tally?: number[]; rank?: number; }
     export function isBlank(value: any): boolean {
         if (angular.isUndefined(value)) return true;
         if (value === null) return true;
@@ -72,15 +72,15 @@ namespace RPCalculator {
     }
     export function swapUp(array: any[], index: number): void { swap(array, index, index - 1); }
     export function swapDown(array: any[], index: number): void { swap(array, index, index + 1); }
-}
-
-namespace RPCalculator {
-    "use strict";
     export function toInt(value: string): number {
         let regExp: RegExp = new RegExp(numberPattern);
         if (!regExp.test(value)) return;
         return parseInt(regExp.exec(value)[1], 10);
     }
+}
+
+namespace RPCalculator {
+    "use strict";
     export namespace Workbook {
         export class Service {
             static $inject: string[] = ["$localStorage", "$location"];
@@ -134,43 +134,134 @@ namespace RPCalculator {
             public validateCompetitors(competitors: ICompetitor[]): boolean { return isBlank(this.competitorsValidationError(competitors)); }
         }
         export class Controller {
-            static $inject: string[] = ["$wb"];
-            constructor(public $wb: Service) { }
+            static $inject: string[] = ["$workbook"];
+            constructor(public $workbook: Service) { }
         }
     }
     export namespace Worksheet {
-        export abstract class BaseController {
-            static $inject: string[] = ["$scope", "$wb", "$route", "$routeParams", "$window"];
+        export abstract class Controller {
+            static $inject: string[] = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter"];
             constructor(
                 protected $scope: angular.IScope,
-                protected $wb: Workbook.Service,
+                protected $workbook: Workbook.Service,
                 protected $route: angular.route.IRouteService,
                 protected $routeParams: angular.route.IRouteParamsService,
-                protected $window: angular.IWindowService) {
-                if (angular.isUndefined(this.index) || angular.isUndefined(this.$wb.worksheets[this.index])) this.$wb.go();
+                protected $window: angular.IWindowService,
+                protected $filter: angular.IFilterService) {
+                if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
+            }
+            public get form(): angular.IFormController { return this.$scope["form"]; }
+            public get index(): number { return toInt(this.$routeParams["index"]); }
+            public get worksheet(): IWorksheet { return this.$workbook.worksheets[this.index]; }
+            public get judges(): IJudge[] { return ifBlank(this.worksheet.judges, []); }
+            public set judges(judges: IJudge[]) { this.worksheet.judges = angular.copy(ifBlank(judges, [])); }
+            public get competitors(): ICompetitor[] { return ifBlank(this.worksheet.competitors, []); }
+            public set competitors(competitors: ICompetitor[]) { this.worksheet.competitors = angular.copy(ifBlank(competitors, [])); }
+        }
+    }
+    export namespace Scoring {
+        interface IPredicate { (competitor: ICompetitor): number; }
+        export class Controller extends Worksheet.Controller {
+            public ranks: string[] = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+            public tabs: string[] = ["Scoring", "Calculation", "Results"];
+            public tab: string = this.tabs[0];
+            public setTab(tab: string, $event: angular.IAngularEvent): void {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (this.tabIndex > 0) this.calculate();
+                this.tab = tab;
+            }
+            public get tabIndex(): number { return this.tabs.indexOf(this.tab); }
+            public get templateUrl(): string { return "Views/" + this.tab.toLowerCase() + ".html"; }
+            public get message(): string {
+                if (this.form.$error.required) return "Each judge must rank every competitor";
+                if (this.form.$error.parse || this.form.$error.min || this.form.$error.max) return "Each score must be a numeric rank between 1 and " + this.competitors.length;
+                if (this.form.$error.duplicate) return "Competitors cannot be tied by any judge";
+            }
+            public calculate(): void {
+                const majority: number = Math.ceil(this.judges.length % 2);
+                this.worksheet.competitors.forEach((competitor: ICompetitor): void => {
+                    competitor.tally = [];
+                    for (let i: number = 1; i <= this.competitors.length; i++) {
+                        let count: number = 0, sum: number = 0;
+                        for (let j: number = 0; j < this.judges.length; j++) {
+                            if (competitor.scores[j] < i) { count++; sum += competitor.scores[j]; }
+                        }
+                        if (count >= majority) competitor.tally.push(-count, sum); else competitor.tally.push(null, null);
+                    }
+                });
+                let predicates: IPredicate[] = [];
+                for (let i: number = 0; i < this.judges.length * 2; i++) {
+                    predicates.push(function (competitor: ICompetitor): number { return competitor.tally[i]; });
+                }
+                this.$filter("orderBy")(this.competitors, predicates)
+                    .forEach(function (competitor: ICompetitor, index: number): void {
+                        competitor.rank = index + 1;
+                    });
+            }
+        }
+    }
+    export namespace Score {
+        export class Controller implements angular.IController {
+            static $inject: string[] = ["$scope"];
+            constructor(private $scope: angular.IScope) { }
+            public get worksheet(): Scoring.Controller { return this.$scope.$ctrl.worksheet; };
+            public get c(): number { return this.$scope.$parent.$index; }
+            public get j(): number { return this.$scope.$index; }
+            public get name(): string { return "c" + this.c + "j" + this.j; }
+            public get tabIndex(): number { return (this.j * this.worksheet.competitors.length) + (this.c + 1); }
+            public get value(): any { return this.worksheet.competitors[this.c].scores[this.j]; }
+            public set value(value: any) { this.worksheet.competitors[this.c].scores[this.j] = value; }
+            public get ngClass(): any { return { "is-valid": this.ngModel.$valid, "is-invalid": this.ngModel.$invalid }; }
+            public ngModel: angular.INgModelController;
+            public $postLink(): void {
+                this.ngModel.$validators["min"] = (modelValue: number, viewValue: any): boolean => { return modelValue >= 1; }
+                this.ngModel.$validators["max"] = (modelValue: number, viewValue: any): boolean => { return modelValue <= this.worksheet.competitors.length; }
+                this.ngModel.$validators["duplicate"] = (modelValue: number, viewValue: any): boolean => {
+                    for (let i: number = this.c + 1; i < this.worksheet.competitors.length; i++) {
+                        if (modelValue === this.worksheet.competitors[i].scores[this.j]) return false;
+                    }
+                    return true;
+                }
+            }
+        }
+        export function DirectiveFactory(): angular.IDirectiveFactory {
+            let factory: angular.IDirectiveFactory = function (): angular.IDirective {
+                return {
+                    restrict: "A",
+                    controller: Controller,
+                    controllerAs: "$score",
+                    bindToController: true,
+                    require: { ngModel: "ngModel", integer: "integer" },
+                    priority: 50
+                };
+            };
+            return factory;
+        }
+    }
+    export namespace Editor {
+        export type PropertyType = "Judges" | "Competitors";
+        export interface IValidatorFn { (data: any[]): string; }
+        export abstract class EditController extends Worksheet.Controller {
+            constructor(
+                protected $scope: angular.IScope,
+                protected $workbook: Workbook.Service,
+                protected $route: angular.route.IRouteService,
+                protected $routeParams: angular.route.IRouteParamsService,
+                protected $window: angular.IWindowService,
+                protected $filter: angular.IFilterService) {
+                super($scope, $workbook, $route, $routeParams, $window, $filter);
+                if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", ($event: angular.IAngularEvent): void => {
                     if (this.form && this.form.$dirty) {
                         $event.preventDefault();
                         this.$window.alert("Please save or undo your changes before continuing.");
                     }
                 }));
-            }
-            public goToWorksheet(): void { this.$wb.go("/worksheets", this.index); }
-            public get form(): angular.IFormController { return this.$scope["form"]; }
-            public get index(): number { return toInt(this.$routeParams["index"]); }
-            public get worksheet(): IWorksheet { return this.$wb.worksheets[this.index]; }
-            public get judges(): IJudge[] { return ifBlank(this.worksheet.judges, []); }
-            public set judges(judges: IJudge[]) { this.worksheet.judges = angular.copy(ifBlank(judges, [])); }
-            public get competitors(): ICompetitor[] { return ifBlank(this.worksheet.competitors, []); }
-            public set competitors(competitors: ICompetitor[]) { this.worksheet.competitors = angular.copy(ifBlank(competitors, [])); }
-        }
-        export type PropertyType = "Judges" | "Competitors";
-        export interface IValidatorFn { (data: any[]): string; }
-        export abstract class EditController extends BaseController {
-            private property: PropertyType;
+            } private property: PropertyType;
             private min: number;
             private max: number;
-            private get validator(): IValidatorFn { return this.$wb[this.property.toLowerCase() + "ValidationError"]; };
+            private get validator(): IValidatorFn { return this.$workbook[this.property.toLowerCase() + "ValidationError"]; };
             public abstract data: any[];
             public getData(property?: PropertyType, min?: number, max?: number): any[] {
                 this.property = ifBlank(property, this.property);
@@ -178,6 +269,7 @@ namespace RPCalculator {
                 this.max = ifBlank(max, this.max);
                 return angular.copy(this[this.property.toLowerCase()]);
             }
+            public get rowTemplate(): string { return "Views/" + this.property.toLowerCase() + ".html"; }
             public get message(): string { return ifBlank(this.validator(this.data), this.property); }
             public get valid(): boolean { return isBlank(this.validator(this.data)); }
             public get invalid(): boolean { return !this.valid; }
@@ -189,55 +281,50 @@ namespace RPCalculator {
             public moveDown(index: number): void { swapDown(this.data, index); this.form.$setDirty(); }
             public save(): void { this[this.property.toLowerCase()] = angular.copy(ifBlank(this.data, [])); this.form.$setPristine(); }
             public undo(): void { this.data = this.getData(); this.form.$setPristine(); }
-        }
-        export class Controller extends BaseController {
-            public scores(competitor: ICompetitor): number[] {
-                if (isBlank(competitor.scores)) competitor.scores = [];
-                return competitor.scores;
-            }
+            public goToWorksheet(): void { this.$workbook.go("/worksheets", this.index); }
         }
     }
     export namespace Judges {
-        export class Controller extends Worksheet.EditController {
+        export class Controller extends Editor.EditController {
             public data: any[] = this.getData("Judges", 3, maxJudges);
             public add(): void { this.data.push({ name: null }); this.form.$setDirty(); }
         }
     }
     export namespace Competitors {
-        export class Controller extends Worksheet.BaseController {
-            public get valid(): boolean { return this.$wb.validateCompetitors(this.competitors); }
-            public get invalid(): boolean { return !this.valid; }
-            public get message(): string { return ifBlank(this.$wb.competitorsValidationError(this.competitors), "Competitors"); }
-            public get canAdd(): boolean { return this.competitors.length < maxCompetitors; }
+        export class Controller extends Editor.EditController {
+            public data: any[] = this.getData("Competitors", 2, maxCompetitors);
             public add(): void {
-                if (!angular.isArray(this.worksheet.competitors)) this.worksheet.competitors = [];
-                let id: number = this.competitors.push({ id: null, name: null, scores: [] });
-                this.competitors[id - 1].id = id;
+                let id: number = this.data.push({ id: null, name: null, scores: [] });
+                this.data[id - 1].id = id;
                 this.form.$setDirty();
             }
-            public get canRemove(): boolean { return this.competitors.length > 2; }
-            public remove(index): void {
-                this.competitors.splice(index, 1);
-                this.form.$setDirty();
+        }
+    }
+    export namespace Integer {
+        export class Controller implements angular.IController {
+            public ngModel: angular.INgModelController;
+            public $postLink(): void {
+                this.ngModel.$parsers.unshift((value: any): any => {
+                    if (this.ngModel.$isEmpty(value)) return value;
+                    return toInt(value);
+                });
             }
-            public moveUp(index: number): void {
-                swap(this.competitors, index, index - 1);
-                this.form.$setDirty();
-            }
-            public moveDown(index: number): void {
-                swap(this.competitors, index, index + 1);
-                this.form.$setDirty();
-            }
-            public save(): void {
-                this.$wb.worksheets[this.index].competitors = angular.copy(ifBlank(this.competitors, []));
-                this.form.$setPristine();
-            }
-            public undo(): void {
-                this.competitors = angular.copy(ifBlank(this.worksheet.competitors, []));
-                this.form.$setPristine();
-            }
+        }
+        export function DirectiveFactory(): angular.IDirectiveFactory {
+            let factory: angular.IDirectiveFactory = function (): angular.IDirective {
+                return {
+                    restrict: "A",
+                    controller: Controller,
+                    bindToController: true,
+                    require: { ngModel: "ngModel" },
+                    priority: 100
+                };
+            };
+            return factory;
         }
     }
 }
 
-module.service("$wb", RPCalculator.Workbook.Service);
+module.service("$workbook", RPCalculator.Workbook.Service);
+module.directive("integer", RPCalculator.Integer.DirectiveFactory());
+module.directive("score", RPCalculator.Score.DirectiveFactory());
