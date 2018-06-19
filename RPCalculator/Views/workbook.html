@@ -6,12 +6,12 @@
                        class="form-control text-center" ng-class="vclass(form.title, null)" required />
             </form>
         </div>
-        <div class="card-body" ng-if="!$ctrl.$wb.worksheets.length">
+        <div class="card-body" ng-if="!$ctrl.worksheets.length">
             <p class="card-text">A workbook allows you to collate the scores for multiple competitions.
             <p class="card-text">Add a new worksheet to get started.</p>
         </div>
-        <div class="list-group list-group-flush" ng-if="$ctrl.$wb.worksheets.length">
-            <a ng-href="#!/worksheets/{{$index}}" class="list-group-item list-group-item-action" ng-repeat="worksheet in $ctrl.$wb.worksheets" ng-bind="worksheet.title"></a>
+        <div class="list-group list-group-flush" ng-if="$ctrl.worksheets.length">
+            <a ng-href="#!/worksheets/{{$index}}" class="list-group-item list-group-item-action" ng-repeat="worksheet in $ctrl.worksheets" ng-bind="worksheet.title"></a>
         </div>
         <div class="card-footer">
             <button type="button" class="btn" ng-class="vclass(form, 'btn-primary', 'btn-default')" ng-disabled="form.$invalid">

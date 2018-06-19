@@ -182,6 +182,11 @@ var RPCalculator;
             function Controller($workbook) {
                 this.$workbook = $workbook;
             }
+            Object.defineProperty(Controller.prototype, "worksheets", {
+                get: function () { return this.$workbook.worksheets; },
+                enumerable: true,
+                configurable: true
+            });
             Controller.$inject = ["$workbook"];
             return Controller;
         }());
@@ -190,13 +195,14 @@ var RPCalculator;
     var Worksheet;
     (function (Worksheet) {
         var Controller = /** @class */ (function () {
-            function Controller($scope, $workbook, $route, $routeParams, $window, $filter) {
+            function Controller($scope, $workbook, $route, $routeParams, $window, $filter, $timeout) {
                 this.$scope = $scope;
                 this.$workbook = $workbook;
                 this.$route = $route;
                 this.$routeParams = $routeParams;
                 this.$window = $window;
                 this.$filter = $filter;
+                this.$timeout = $timeout;
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index]))
                     this.$workbook.go();
             }
@@ -227,7 +233,7 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Controller.$inject = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter"];
+            Controller.$inject = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter", "$timeout"];
             return Controller;
         }());
         Worksheet.Controller = Controller;
@@ -244,11 +250,12 @@ var RPCalculator;
                 return _this;
             }
             Controller.prototype.setTab = function (tab, $event) {
+                var _this = this;
                 $event.preventDefault();
                 $event.stopPropagation();
                 if (this.tabIndex > 0)
                     this.calculate();
-                this.tab = tab;
+                this.$timeout(function () { _this.tab = tab; });
             };
             Object.defineProperty(Controller.prototype, "tabIndex", {
                 get: function () { return this.tabs.indexOf(this.tab); },
@@ -280,7 +287,7 @@ var RPCalculator;
                     for (var i = 1; i <= _this.competitors.length; i++) {
                         var count = 0, sum = 0;
                         for (var j = 0; j < _this.judges.length; j++) {
-                            if (competitor.scores[j] < i) {
+                            if (competitor.scores[j] <= i) {
                                 count++;
                                 sum += competitor.scores[j];
                             }
@@ -385,14 +392,15 @@ var RPCalculator;
     (function (Editor) {
         var EditController = /** @class */ (function (_super) {
             __extends(EditController, _super);
-            function EditController($scope, $workbook, $route, $routeParams, $window, $filter) {
-                var _this = _super.call(this, $scope, $workbook, $route, $routeParams, $window, $filter) || this;
+            function EditController($scope, $workbook, $route, $routeParams, $window, $filter, $timeout) {
+                var _this = _super.call(this, $scope, $workbook, $route, $routeParams, $window, $filter, $timeout) || this;
                 _this.$scope = $scope;
                 _this.$workbook = $workbook;
                 _this.$route = $route;
                 _this.$routeParams = $routeParams;
                 _this.$window = $window;
                 _this.$filter = $filter;
+                _this.$timeout = $timeout;
                 if (angular.isUndefined(_this.index) || angular.isUndefined(_this.$workbook.worksheets[_this.index]))
                     _this.$workbook.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {

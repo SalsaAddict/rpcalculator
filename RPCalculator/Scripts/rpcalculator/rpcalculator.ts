@@ -135,19 +135,21 @@ namespace RPCalculator {
         }
         export class Controller {
             static $inject: string[] = ["$workbook"];
-            constructor(public $workbook: Service) { }
+            constructor(private $workbook: Service) { }
+            public get worksheets(): IWorksheet[] { return this.$workbook.worksheets; }
         }
     }
     export namespace Worksheet {
         export abstract class Controller {
-            static $inject: string[] = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter"];
+            static $inject: string[] = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter", "$timeout"];
             constructor(
                 protected $scope: angular.IScope,
                 protected $workbook: Workbook.Service,
                 protected $route: angular.route.IRouteService,
                 protected $routeParams: angular.route.IRouteParamsService,
                 protected $window: angular.IWindowService,
-                protected $filter: angular.IFilterService) {
+                protected $filter: angular.IFilterService,
+                protected $timeout: angular.ITimeoutService) {
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
             }
             public get form(): angular.IFormController { return this.$scope["form"]; }
@@ -169,7 +171,7 @@ namespace RPCalculator {
                 $event.preventDefault();
                 $event.stopPropagation();
                 if (this.tabIndex > 0) this.calculate();
-                this.tab = tab;
+                this.$timeout((): void => { this.tab = tab; });
             }
             public get tabIndex(): number { return this.tabs.indexOf(this.tab); }
             public get templateUrl(): string { return "Views/" + this.tab.toLowerCase() + ".html"; }
@@ -185,7 +187,7 @@ namespace RPCalculator {
                     for (let i: number = 1; i <= this.competitors.length; i++) {
                         let count: number = 0, sum: number = 0;
                         for (let j: number = 0; j < this.judges.length; j++) {
-                            if (competitor.scores[j] < i) { count++; sum += competitor.scores[j]; }
+                            if (competitor.scores[j] <= i) { count++; sum += competitor.scores[j]; }
                         }
                         if (count >= majority) competitor.tally.push(-count, sum); else competitor.tally.push(null, null);
                     }
@@ -249,8 +251,9 @@ namespace RPCalculator {
                 protected $route: angular.route.IRouteService,
                 protected $routeParams: angular.route.IRouteParamsService,
                 protected $window: angular.IWindowService,
-                protected $filter: angular.IFilterService) {
-                super($scope, $workbook, $route, $routeParams, $window, $filter);
+                protected $filter: angular.IFilterService,
+                protected $timeout: angular.ITimeoutService) {
+                super($scope, $workbook, $route, $routeParams, $window, $filter, $timeout);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", ($event: angular.IAngularEvent): void => {
                     if (this.form && this.form.$dirty) {
