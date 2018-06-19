@@ -6,10 +6,22 @@
     <link rel="stylesheet" type="text/css" href="Content/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="Content/bootswatch/yeti/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="Content/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="Content/rpcalculator.min.css" />
 </head>
 <body>
-    <a href="#" class="btn btn-primary">Home</a>
-    <br /><br />
+    <nav class="navbar navbar-expand navbar-dark bg-primary fixed-top">
+        <span class="navbar-brand mb-0 h1">Dance Scores</span>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fa fa-fw fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
     <div ng-view></div>
     <script src="Scripts/angular.min.js"></script>
     <script src="Scripts/angular-route.min.js"></script>

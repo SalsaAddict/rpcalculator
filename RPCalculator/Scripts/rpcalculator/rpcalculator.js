@@ -253,9 +253,9 @@ var RPCalculator;
                 var _this = this;
                 $event.preventDefault();
                 $event.stopPropagation();
-                if (this.tabIndex > 0)
-                    this.calculate();
-                this.$timeout(function () { _this.tab = tab; });
+                this.$timeout(function () { if (_this.tabIndex > 0)
+                    _this.calculate(); })
+                    .then(function () { _this.tab = tab; });
             };
             Object.defineProperty(Controller.prototype, "tabIndex", {
                 get: function () { return this.tabs.indexOf(this.tab); },
@@ -336,11 +336,11 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(Controller.prototype, "name", {
-                get: function () { return "c" + this.c + "j" + this.j; },
-                enumerable: true,
-                configurable: true
-            });
+            Controller.prototype.name = function (c, j) {
+                if (c === void 0) { c = this.c; }
+                if (j === void 0) { j = this.j; }
+                return "c" + c + "j" + j;
+            };
             Object.defineProperty(Controller.prototype, "tabIndex", {
                 get: function () { return (this.j * this.worksheet.competitors.length) + (this.c + 1); },
                 enumerable: true,
@@ -368,6 +368,12 @@ var RPCalculator;
                     }
                     return true;
                 };
+                this.ngModel.$viewChangeListeners.push(function () {
+                    for (var i = 0; i < _this.c; i++) {
+                        var ngModel = _this.form[_this.name(i, _this.j)];
+                        ngModel.$validate();
+                    }
+                });
             };
             Controller.$inject = ["$scope"];
             return Controller;
@@ -380,7 +386,7 @@ var RPCalculator;
                     controller: Controller,
                     controllerAs: "$score",
                     bindToController: true,
-                    require: { ngModel: "ngModel", integer: "integer" },
+                    require: { form: "^^form", ngModel: "ngModel", integer: "integer" },
                     priority: 50
                 };
             };

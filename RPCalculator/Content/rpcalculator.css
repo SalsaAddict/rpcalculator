@@ -1,0 +1,8 @@
+﻿body{
+    padding-top: 70px;
+}
+
+table, thead, tbody, tfoot, td, th {
+    border-collapse: collapse !important;
+    border: 1px solid silver !important;
+}

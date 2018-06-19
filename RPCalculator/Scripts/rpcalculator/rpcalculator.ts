@@ -170,8 +170,8 @@ namespace RPCalculator {
             public setTab(tab: string, $event: angular.IAngularEvent): void {
                 $event.preventDefault();
                 $event.stopPropagation();
-                if (this.tabIndex > 0) this.calculate();
-                this.$timeout((): void => { this.tab = tab; });
+                this.$timeout((): void => { if (this.tabIndex > 0) this.calculate(); })
+                    .then((): void => { this.tab = tab; });
             }
             public get tabIndex(): number { return this.tabs.indexOf(this.tab); }
             public get templateUrl(): string { return "Views/" + this.tab.toLowerCase() + ".html"; }
@@ -197,7 +197,7 @@ namespace RPCalculator {
                     predicates.push(function (competitor: ICompetitor): number { return competitor.tally[i]; });
                 }
                 this.$filter("orderBy")(this.competitors, predicates)
-                    .forEach(function (competitor: ICompetitor, index: number): void {
+                    .forEach((competitor: ICompetitor, index: number): void => {
                         competitor.rank = index + 1;
                     });
             }
@@ -210,11 +210,12 @@ namespace RPCalculator {
             public get worksheet(): Scoring.Controller { return this.$scope.$ctrl.worksheet; };
             public get c(): number { return this.$scope.$parent.$index; }
             public get j(): number { return this.$scope.$index; }
-            public get name(): string { return "c" + this.c + "j" + this.j; }
+            public name(c: number = this.c, j: number = this.j): string { return "c" + c + "j" + j; }
             public get tabIndex(): number { return (this.j * this.worksheet.competitors.length) + (this.c + 1); }
             public get value(): any { return this.worksheet.competitors[this.c].scores[this.j]; }
             public set value(value: any) { this.worksheet.competitors[this.c].scores[this.j] = value; }
             public get ngClass(): any { return { "is-valid": this.ngModel.$valid, "is-invalid": this.ngModel.$invalid }; }
+            public form: angular.IFormController;
             public ngModel: angular.INgModelController;
             public $postLink(): void {
                 this.ngModel.$validators["min"] = (modelValue: number, viewValue: any): boolean => { return modelValue >= 1; }
@@ -225,6 +226,12 @@ namespace RPCalculator {
                     }
                     return true;
                 }
+                this.ngModel.$viewChangeListeners.push((): void => {
+                    for (let i: number = 0; i < this.c; i++) {
+                        let ngModel: angular.INgModelController = this.form[this.name(i, this.j)];
+                        ngModel.$validate();
+                    }
+                });
             }
         }
         export function DirectiveFactory(): angular.IDirectiveFactory {
@@ -234,7 +241,7 @@ namespace RPCalculator {
                     controller: Controller,
                     controllerAs: "$score",
                     bindToController: true,
-                    require: { ngModel: "ngModel", integer: "integer" },
+                    require: { form: "^^form", ngModel: "ngModel", integer: "integer" },
                     priority: 50
                 };
             };

@@ -115,6 +115,10 @@
     <Content Include="Content\bootswatch\yeti\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\rpcalculator.css" />
+    <Content Include="Content\rpcalculator.min.css">
+      <DependentUpon>rpcalculator.css</DependentUpon>
+    </Content>
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="index.html" />
     <Content Include="Scripts\angular-mocks.js" />
