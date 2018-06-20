@@ -1,10 +1,7 @@
 ﻿<div class="container">
     <div class="card">
         <div class="card-header text-center">
-            <form name="form" autocomplete="off">
-                <input name="title" type="text" placeholder="Workbook Title" ng-model="$ctrl.$workbook.title"
-                       class="form-control text-center" ng-class="vclass(form.title, null)" required />
-            </form>
+            <input type="text" class="form-control text-center" ng-model="$ctrl.$workbook.title" placeholder="{{$ctrl.defaultWorkbookTitle}}" />
         </div>
         <div class="card-body" ng-if="!$ctrl.worksheets.length">
             <p class="card-text">A workbook allows you to collate the scores for multiple competitions.
@@ -14,16 +11,22 @@
             <div class="input-group">
                 <div class="input-group-prepend">
                     <a ng-href="#!/worksheets/{{$index}}" class="btn btn-primary">
-                        <i class="fa fa-fw fa-table"></i>
+                        <i class="fa fa-fw fa-edit"></i>
+                        <span>Edit</span>
                     </a>
                 </div>
-                <input type="text" class="form-control" ng-model="worksheet.title" />
+                <input type="text" class="form-control" ng-model="worksheet.title" placeholder="{{$ctrl.defaultWorksheetTitle}}" />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-danger">
+                        <i class="fa fa-fw fa-times"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="card-footer">
-            <button type="button" class="btn" ng-class="vclass(form, 'btn-primary', 'btn-default')" ng-disabled="form.$invalid">
-                <span>New Worksheet</span>
-                <i class="fa fa-fw fa-file-archive-o"></i>
+            <button type="button" class="btn btn-primary">
+                <i class="fa fa-fw fa-plus-circle"></i>
+                <span>Add&hellip;</span>
             </button>
         </div>
     </div>

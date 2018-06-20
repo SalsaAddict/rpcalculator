@@ -2,7 +2,9 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th rowspan="2" class="align-middle">Results</th>
+                <th rowspan="2" class="align-middle">
+                    <select class="form-control" ng-model="$ctrl.top" ng-options="top as 'Top ' + top for top in $ctrl.tops"></select>
+                </th>
                 <th colspan="2" rowspan="2" class="align-middle">Competitors</th>
                 <th colspan="{{$ctrl.competitors.length}}" class="align-middle">Tally</th>
             </tr>
@@ -11,12 +13,12 @@
             </tr>
         </thead>
         <tbody ng-form="form">
-            <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank'">
-                <th class="h3 align-middle bg-danger text-white">
+            <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank' | limitTo: $ctrl.top">
+                <th class="h3 align-middle bg-primary text-white">
                     <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
                 </th>
-                <th class="h4 text-dark align-middle">#{{competitor.id}}</th>
-                <th class="h4 text-dark align-middle">{{competitor.name}}</th>
+                <th class="h4 text-dark align-middle"><strong>#{{competitor.id}}</strong></th>
+                <th class="h4 text-dark align-middle text-nowrap"><strong>{{competitor.name}}</strong></th>
                 <td ng-repeat="item in $ctrl.competitors" class="align-middle">
                     <ng-switch on="!!competitor.tally[$index * 2]">
                         <div ng-switch-when="true">

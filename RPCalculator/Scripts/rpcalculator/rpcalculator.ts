@@ -47,12 +47,14 @@ namespace RPCalculator {
     "use strict";
     export const maxJudges: number = 7;
     export const maxCompetitors: number = 8;
-    export const textPattern = "(^[\\w\\s-]+$)";
-    export const numberPattern = "(^\\d+$)";
+    export const textPattern: string = "(^[\\w\\s-]+$)";
+    export const numberPattern: string = "(^\\d+$)";
+    export const defaultWorkbookTitle: string = "Unnamed Workbook";
+    export const defaultWorksheetTitle: string = "Unnamed Worksheet";
     export interface IRootScopeService extends angular.IRootScopeService { textPattern: string; numberPattern: string; vclass: Function; }
     export interface IStorageService extends angular.storage.IStorageService { workbook: IWorkbook; }
     export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
-    export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; }
+    export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; top?: number; }
     export interface IJudge { name: string; }
     export interface ICompetitor { id: number; name: string; scores: number[]; tally?: number[]; rank?: number; }
     export function isBlank(value: any): boolean {
@@ -81,20 +83,60 @@ namespace RPCalculator {
 
 namespace RPCalculator {
     "use strict";
+    export namespace Menu {
+        export class Controller implements angular.IController {
+            static $inject: string[] = ["$workbook", "$location", "$window"];
+            constructor(
+                private $workbook: Workbook.Service,
+                private $location: angular.ILocationService,
+                private $window: angular.IWindowService) { }
+            public download($event: angular.IAngularEvent): void {
+                $event.preventDefault();
+                $event.stopPropagation();
+                let link: HTMLAnchorElement = document.createElement("a");
+                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, true));
+                link.download = ifBlank(this.$workbook.workbook.title, defaultWorkbookTitle) + ".json";
+                link.click();
+            }
+            public upload($event: angular.IAngularEvent): void {
+                $event.preventDefault();
+                $event.stopPropagation();
+                let input = document.getElementById("upload") as HTMLInputElement;
+                input.click();
+            }
+            public example($event: angular.IAngularEvent): void {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (this.$window.confirm("Are you sure you want to load the example workbook?")) {
+                    this.$workbook.loadExample().then((): void => { this.$location.path("/workbook"); });
+                }
+            }
+            public $postLink(): void { }
+        }
+    }
     export namespace Workbook {
         export class Service {
-            static $inject: string[] = ["$localStorage", "$location"];
+            static $inject: string[] = ["$localStorage", "$location", "$http", "$q"];
             constructor(
                 private $localStorage: IStorageService,
-                private $location: angular.ILocationService) { }
+                private $location: angular.ILocationService,
+                private $http: angular.IHttpService,
+                private $q: angular.IQService) {
+                if (angular.isUndefined($localStorage.workbook)) this.loadExample();
+            }
             public go(path: string = "/workbook", index?: number): void {
                 if (index >= 0) path += "/" + index;
                 this.$location.path(path);
             }
-            public get workbook(): IWorkbook {
-                this.$localStorage.workbook = ifBlank(this.$localStorage.workbook, Example.workbook);
-                return this.$localStorage.workbook;
+            public loadExample(): angular.IPromise<void> {
+                return this.$http.get("example.json").then((response: angular.IHttpPromiseCallbackArg<IWorkbook>): void => {
+                    this.$localStorage.workbook = response.data;
+                });
             }
+            public get workbook(): IWorkbook {
+                return ifBlank(this.$localStorage.workbook, { title: null, worksheets: [] });
+            }
+            public set workbook(workbook: IWorkbook) { this.$localStorage.workbook = workbook; }
             public get title(): string {
                 if (angular.isUndefined(this.workbook.title)) this.workbook.title = "New Workbook";
                 return this.workbook.title;
@@ -132,28 +174,33 @@ namespace RPCalculator {
                 return;
             }
             public validateCompetitors(competitors: ICompetitor[]): boolean { return isBlank(this.competitorsValidationError(competitors)); }
+
         }
         export class Controller {
             static $inject: string[] = ["$workbook"];
             constructor(private $workbook: Service) { }
+            public get defaultWorkbookTitle(): string { return defaultWorkbookTitle; }
+            public get defaultWorksheetTitle(): string { return defaultWorksheetTitle; }
+            public get title(): string { return this.$workbook.title; }
+            public set title(title: string) { this.$workbook.title = title; }
             public get worksheets(): IWorksheet[] { return this.$workbook.worksheets; }
         }
     }
     export namespace Worksheet {
         export abstract class Controller {
-            static $inject: string[] = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter", "$timeout"];
+            static $inject: string[] = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter"];
             constructor(
                 protected $scope: angular.IScope,
                 protected $workbook: Workbook.Service,
                 protected $route: angular.route.IRouteService,
                 protected $routeParams: angular.route.IRouteParamsService,
                 protected $window: angular.IWindowService,
-                protected $filter: angular.IFilterService,
-                protected $timeout: angular.ITimeoutService) {
+                protected $filter: angular.IFilterService) {
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
             }
             public get form(): angular.IFormController { return this.$scope["form"]; }
             public get index(): number { return toInt(this.$routeParams["index"]); }
+            public get title(): string { return ifBlank(this.worksheet.title, defaultWorksheetTitle); }
             public get worksheet(): IWorksheet { return this.$workbook.worksheets[this.index]; }
             public get judges(): IJudge[] { return ifBlank(this.worksheet.judges, []); }
             public set judges(judges: IJudge[]) { this.worksheet.judges = angular.copy(ifBlank(judges, [])); }
@@ -167,11 +214,19 @@ namespace RPCalculator {
             public ranks: string[] = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
             public tabs: string[] = ["Scoring", "Calculation", "Results"];
             public tab: string = this.tabs[0];
+            public get tops(): number[] { return this.$filter("limitTo")([1, 2, 3, 4, 5, 6, 7, 8], this.competitors.length); }
+            public get top(): number {
+                if (!(this.worksheet.top >= 1 && this.worksheet.top <= this.competitors.length)) {
+                    this.worksheet.top = (this.competitors.length > 3) ? 3 : this.competitors.length;
+                }
+                return this.worksheet.top;
+            }
+            public set top(top: number) { this.worksheet.top = top; }
             public setTab(tab: string, $event: angular.IAngularEvent): void {
                 $event.preventDefault();
                 $event.stopPropagation();
-                this.$timeout((): void => { if (this.tabIndex > 0) this.calculate(); })
-                    .then((): void => { this.tab = tab; });
+                if (this.tabs.indexOf(tab) > 0) this.calculate();
+                this.tab = tab;
             }
             public get tabIndex(): number { return this.tabs.indexOf(this.tab); }
             public get templateUrl(): string { return "Views/" + this.tab.toLowerCase() + ".html"; }
@@ -181,7 +236,7 @@ namespace RPCalculator {
                 if (this.form.$error.duplicate) return "Competitors cannot be tied by any judge";
             }
             public calculate(): void {
-                const majority: number = Math.ceil(this.judges.length % 2);
+                const majority: number = Math.ceil(this.worksheet.judges.length / 2);
                 this.worksheet.competitors.forEach((competitor: ICompetitor): void => {
                     competitor.tally = [];
                     for (let i: number = 1; i <= this.competitors.length; i++) {
@@ -258,9 +313,8 @@ namespace RPCalculator {
                 protected $route: angular.route.IRouteService,
                 protected $routeParams: angular.route.IRouteParamsService,
                 protected $window: angular.IWindowService,
-                protected $filter: angular.IFilterService,
-                protected $timeout: angular.ITimeoutService) {
-                super($scope, $workbook, $route, $routeParams, $window, $filter, $timeout);
+                protected $filter: angular.IFilterService) {
+                super($scope, $workbook, $route, $routeParams, $window, $filter);
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index])) this.$workbook.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", ($event: angular.IAngularEvent): void => {
                     if (this.form && this.form.$dirty) {
@@ -333,8 +387,41 @@ namespace RPCalculator {
             return factory;
         }
     }
+    export namespace Upload {
+        export class Controller implements angular.IController {
+            static $inject: string[] = ["$scope", "$element", "$workbook", "$location"];
+            constructor(
+                private $scope: angular.IScope,
+                private $element: angular.IAugmentedJQuery,
+                private $workbook: Workbook.Service,
+                private $location: angular.ILocationService) { }
+            public onChange = (event: JQueryEventObject): void => {
+                let input = event.target as HTMLInputElement;
+                if (!input.files.length) return;
+                let reader: FileReader = new FileReader();
+                reader.onload = () => {
+                    this.$scope.$apply((): void => {
+                        this.$workbook.workbook = angular.fromJson(reader.result);
+                        this.$location.path("/workbook");
+                    });
+                };
+                reader.readAsText(input.files[0]);
+            }
+            public $postLink(): void {
+                this.$element.bind("change", this.onChange);
+            }
+        }
+        export function DirectiveFactory(): angular.IDirectiveFactory {
+            let factory: angular.IDirectiveFactory = function (): angular.IDirective {
+                return { restrict: "A", scope: false, controller: Controller };
+            };
+            return factory;
+        }
+    }
 }
 
 module.service("$workbook", RPCalculator.Workbook.Service);
+module.controller("menuController", RPCalculator.Menu.Controller);
 module.directive("integer", RPCalculator.Integer.DirectiveFactory());
 module.directive("score", RPCalculator.Score.DirectiveFactory());
+module.directive("upload", RPCalculator.Upload.DirectiveFactory());

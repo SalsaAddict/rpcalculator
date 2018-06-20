@@ -57,6 +57,8 @@ var RPCalculator;
     RPCalculator.maxCompetitors = 8;
     RPCalculator.textPattern = "(^[\\w\\s-]+$)";
     RPCalculator.numberPattern = "(^\\d+$)";
+    RPCalculator.defaultWorkbookTitle = "Unnamed Workbook";
+    RPCalculator.defaultWorksheetTitle = "Unnamed Worksheet";
     function isBlank(value) {
         if (angular.isUndefined(value))
             return true;
@@ -95,12 +97,52 @@ var RPCalculator;
 })(RPCalculator || (RPCalculator = {}));
 (function (RPCalculator) {
     "use strict";
+    var Menu;
+    (function (Menu) {
+        var Controller = /** @class */ (function () {
+            function Controller($workbook, $location, $window) {
+                this.$workbook = $workbook;
+                this.$location = $location;
+                this.$window = $window;
+            }
+            Controller.prototype.download = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                var link = document.createElement("a");
+                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, true));
+                link.download = RPCalculator.ifBlank(this.$workbook.workbook.title, RPCalculator.defaultWorkbookTitle) + ".json";
+                link.click();
+            };
+            Controller.prototype.upload = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                var input = document.getElementById("upload");
+                input.click();
+            };
+            Controller.prototype.example = function ($event) {
+                var _this = this;
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (this.$window.confirm("Are you sure you want to load the example workbook?")) {
+                    this.$workbook.loadExample().then(function () { _this.$location.path("/workbook"); });
+                }
+            };
+            Controller.prototype.$postLink = function () { };
+            Controller.$inject = ["$workbook", "$location", "$window"];
+            return Controller;
+        }());
+        Menu.Controller = Controller;
+    })(Menu = RPCalculator.Menu || (RPCalculator.Menu = {}));
     var Workbook;
     (function (Workbook) {
         var Service = /** @class */ (function () {
-            function Service($localStorage, $location) {
+            function Service($localStorage, $location, $http, $q) {
                 this.$localStorage = $localStorage;
                 this.$location = $location;
+                this.$http = $http;
+                this.$q = $q;
+                if (angular.isUndefined($localStorage.workbook))
+                    this.loadExample();
             }
             Service.prototype.go = function (path, index) {
                 if (path === void 0) { path = "/workbook"; }
@@ -108,11 +150,17 @@ var RPCalculator;
                     path += "/" + index;
                 this.$location.path(path);
             };
+            Service.prototype.loadExample = function () {
+                var _this = this;
+                return this.$http.get("example.json").then(function (response) {
+                    _this.$localStorage.workbook = response.data;
+                });
+            };
             Object.defineProperty(Service.prototype, "workbook", {
                 get: function () {
-                    this.$localStorage.workbook = RPCalculator.ifBlank(this.$localStorage.workbook, Example.workbook);
-                    return this.$localStorage.workbook;
+                    return RPCalculator.ifBlank(this.$localStorage.workbook, { title: null, worksheets: [] });
                 },
+                set: function (workbook) { this.$localStorage.workbook = workbook; },
                 enumerable: true,
                 configurable: true
             });
@@ -174,7 +222,7 @@ var RPCalculator;
                 return;
             };
             Service.prototype.validateCompetitors = function (competitors) { return RPCalculator.isBlank(this.competitorsValidationError(competitors)); };
-            Service.$inject = ["$localStorage", "$location"];
+            Service.$inject = ["$localStorage", "$location", "$http", "$q"];
             return Service;
         }());
         Workbook.Service = Service;
@@ -182,6 +230,22 @@ var RPCalculator;
             function Controller($workbook) {
                 this.$workbook = $workbook;
             }
+            Object.defineProperty(Controller.prototype, "defaultWorkbookTitle", {
+                get: function () { return RPCalculator.defaultWorkbookTitle; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "defaultWorksheetTitle", {
+                get: function () { return RPCalculator.defaultWorksheetTitle; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "title", {
+                get: function () { return this.$workbook.title; },
+                set: function (title) { this.$workbook.title = title; },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Controller.prototype, "worksheets", {
                 get: function () { return this.$workbook.worksheets; },
                 enumerable: true,
@@ -195,14 +259,13 @@ var RPCalculator;
     var Worksheet;
     (function (Worksheet) {
         var Controller = /** @class */ (function () {
-            function Controller($scope, $workbook, $route, $routeParams, $window, $filter, $timeout) {
+            function Controller($scope, $workbook, $route, $routeParams, $window, $filter) {
                 this.$scope = $scope;
                 this.$workbook = $workbook;
                 this.$route = $route;
                 this.$routeParams = $routeParams;
                 this.$window = $window;
                 this.$filter = $filter;
-                this.$timeout = $timeout;
                 if (angular.isUndefined(this.index) || angular.isUndefined(this.$workbook.worksheets[this.index]))
                     this.$workbook.go();
             }
@@ -213,6 +276,11 @@ var RPCalculator;
             });
             Object.defineProperty(Controller.prototype, "index", {
                 get: function () { return RPCalculator.toInt(this.$routeParams["index"]); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "title", {
+                get: function () { return RPCalculator.ifBlank(this.worksheet.title, RPCalculator.defaultWorksheetTitle); },
                 enumerable: true,
                 configurable: true
             });
@@ -233,7 +301,7 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Controller.$inject = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter", "$timeout"];
+            Controller.$inject = ["$scope", "$workbook", "$route", "$routeParams", "$window", "$filter"];
             return Controller;
         }());
         Worksheet.Controller = Controller;
@@ -249,13 +317,28 @@ var RPCalculator;
                 _this.tab = _this.tabs[0];
                 return _this;
             }
+            Object.defineProperty(Controller.prototype, "tops", {
+                get: function () { return this.$filter("limitTo")([1, 2, 3, 4, 5, 6, 7, 8], this.competitors.length); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "top", {
+                get: function () {
+                    if (!(this.worksheet.top >= 1 && this.worksheet.top <= this.competitors.length)) {
+                        this.worksheet.top = (this.competitors.length > 3) ? 3 : this.competitors.length;
+                    }
+                    return this.worksheet.top;
+                },
+                set: function (top) { this.worksheet.top = top; },
+                enumerable: true,
+                configurable: true
+            });
             Controller.prototype.setTab = function (tab, $event) {
-                var _this = this;
                 $event.preventDefault();
                 $event.stopPropagation();
-                this.$timeout(function () { if (_this.tabIndex > 0)
-                    _this.calculate(); })
-                    .then(function () { _this.tab = tab; });
+                if (this.tabs.indexOf(tab) > 0)
+                    this.calculate();
+                this.tab = tab;
             };
             Object.defineProperty(Controller.prototype, "tabIndex", {
                 get: function () { return this.tabs.indexOf(this.tab); },
@@ -281,7 +364,7 @@ var RPCalculator;
             });
             Controller.prototype.calculate = function () {
                 var _this = this;
-                var majority = Math.ceil(this.judges.length % 2);
+                var majority = Math.ceil(this.worksheet.judges.length / 2);
                 this.worksheet.competitors.forEach(function (competitor) {
                     competitor.tally = [];
                     for (var i = 1; i <= _this.competitors.length; i++) {
@@ -398,15 +481,14 @@ var RPCalculator;
     (function (Editor) {
         var EditController = /** @class */ (function (_super) {
             __extends(EditController, _super);
-            function EditController($scope, $workbook, $route, $routeParams, $window, $filter, $timeout) {
-                var _this = _super.call(this, $scope, $workbook, $route, $routeParams, $window, $filter, $timeout) || this;
+            function EditController($scope, $workbook, $route, $routeParams, $window, $filter) {
+                var _this = _super.call(this, $scope, $workbook, $route, $routeParams, $window, $filter) || this;
                 _this.$scope = $scope;
                 _this.$workbook = $workbook;
                 _this.$route = $route;
                 _this.$routeParams = $routeParams;
                 _this.$window = $window;
                 _this.$filter = $filter;
-                _this.$timeout = $timeout;
                 if (angular.isUndefined(_this.index) || angular.isUndefined(_this.$workbook.worksheets[_this.index]))
                     _this.$workbook.go();
                 $scope.$on("$destroy", $scope.$on("$routeChangeStart", function ($event) {
@@ -531,8 +613,48 @@ var RPCalculator;
         }
         Integer.DirectiveFactory = DirectiveFactory;
     })(Integer = RPCalculator.Integer || (RPCalculator.Integer = {}));
+    var Upload;
+    (function (Upload) {
+        var Controller = /** @class */ (function () {
+            function Controller($scope, $element, $workbook, $location) {
+                var _this = this;
+                this.$scope = $scope;
+                this.$element = $element;
+                this.$workbook = $workbook;
+                this.$location = $location;
+                this.onChange = function (event) {
+                    var input = event.target;
+                    if (!input.files.length)
+                        return;
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        _this.$scope.$apply(function () {
+                            _this.$workbook.workbook = angular.fromJson(reader.result);
+                            _this.$location.path("/workbook");
+                        });
+                    };
+                    reader.readAsText(input.files[0]);
+                };
+            }
+            Controller.prototype.$postLink = function () {
+                this.$element.bind("change", this.onChange);
+            };
+            Controller.$inject = ["$scope", "$element", "$workbook", "$location"];
+            return Controller;
+        }());
+        Upload.Controller = Controller;
+        function DirectiveFactory() {
+            var factory = function () {
+                return { restrict: "A", scope: false, controller: Controller };
+            };
+            return factory;
+        }
+        Upload.DirectiveFactory = DirectiveFactory;
+    })(Upload = RPCalculator.Upload || (RPCalculator.Upload = {}));
 })(RPCalculator || (RPCalculator = {}));
 module.service("$workbook", RPCalculator.Workbook.Service);
+module.controller("menuController", RPCalculator.Menu.Controller);
 module.directive("integer", RPCalculator.Integer.DirectiveFactory());
 module.directive("score", RPCalculator.Score.DirectiveFactory());
+module.directive("upload", RPCalculator.Upload.DirectiveFactory());
 //# sourceMappingURL=rpcalculator.js.map

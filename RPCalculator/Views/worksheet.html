@@ -2,7 +2,7 @@
     <div class="card text-center" ng-class="{ 'border-success': form.$valid, 'border-danger': form.$invalid }" ng-form="form">
         <div class="card-header">
             <h4 class="card-title">
-                <strong>{{$ctrl.worksheet.title || "New Worksheet"}}</strong>
+                <strong>{{$ctrl.title}}</strong>
             </h4>
             <ul class="nav nav-tabs nav-fill card-header-tabs" ng-if="form.$valid">
                 <li class="nav-item" ng-repeat="tab in $ctrl.tabs">
@@ -16,6 +16,12 @@
         </h5>
         <div class="card-body">
             <ng-include src="$ctrl.templateUrl"></ng-include>
+        </div>
+        <div class="card-footer text-right">
+            <a href="#" class="btn btn-primary">
+                <i class="fa fa-fw fa-arrow-circle-left"></i>
+                <span>Back</span>
+            </a>
         </div>
     </div>
 </div>

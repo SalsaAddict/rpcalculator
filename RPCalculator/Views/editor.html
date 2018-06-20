@@ -23,7 +23,7 @@
             </div>
             <div class="d-flex p-2 justify-content-between">
                 <div>
-                    <button type="button" class="btn" ng-click="$ctrl.add()" title="Add" ng-disabled="!$ctrl.canAdd" ng-class="{ 'btn-secondary': $ctrl.canAdd }">
+                    <button type="button" class="btn" ng-click="$ctrl.add()" title="Add" ng-disabled="!$ctrl.canAdd" ng-class="{ 'btn-primary': $ctrl.canAdd }">
                         <i class="fa fa-fw fa-plus-circle"></i>
                         <span>Add&hellip;</span>
                     </button>
@@ -31,8 +31,8 @@
                 <div ng-switch="form.$dirty">
                     <div ng-switch-when="false">
                         <button type="button" class="btn btn-primary" ng-class="{ 'btn-warning': form.$dirty }" ng-click="$ctrl.goToWorksheet()">
-                            <i class="fa fa-fw fa-table"></i>
-                            <span>Worksheet</span>
+                            <i class="fa fa-fw fa-arrow-circle-left"></i>
+                            <span>Back</span>
                         </button>
                     </div>
                     <div ng-switch-when="true">
