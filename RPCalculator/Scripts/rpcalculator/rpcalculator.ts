@@ -90,6 +90,7 @@ namespace RPCalculator {
                 private $workbook: Workbook.Service,
                 private $location: angular.ILocationService,
                 private $window: angular.IWindowService) { }
+            public collapsed: boolean = true;
             public download($event: angular.IAngularEvent): void {
                 $event.preventDefault();
                 $event.stopPropagation();

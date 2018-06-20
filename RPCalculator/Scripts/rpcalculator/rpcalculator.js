@@ -104,6 +104,7 @@ var RPCalculator;
                 this.$workbook = $workbook;
                 this.$location = $location;
                 this.$window = $window;
+                this.collapsed = true;
             }
             Controller.prototype.download = function ($event) {
                 $event.preventDefault();
