@@ -182,6 +182,7 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="example.json" />
+    <Content Include="muevelo.json" />
     <None Include="packages.config" />
     <Content Include="Scripts\angular-route.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -247,8 +248,10 @@
   <ItemGroup>
     <Content Include="Views\calculation.html" />
     <Content Include="Views\competitors.html" />
+    <Content Include="Views\dialog.html" />
     <Content Include="Views\editor.html" />
     <Content Include="Views\judges.html" />
+    <Content Include="Views\menu.html" />
     <Content Include="Views\results.html" />
     <Content Include="Views\scoring.html" />
     <Content Include="Views\workbook.html" />

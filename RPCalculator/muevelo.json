@@ -1,0 +1,105 @@
+﻿{
+  "title": "Muévelo Social Dance Competition",
+  "worksheets": [
+    {
+      "title": "Round 1 - Leaders",
+      "judges": [
+        { "name": "Biskit" },
+        { "name": "Alex" },
+        { "name": "Pierre" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Fernando",
+          "scores": []
+        },
+        {
+          "id": 2,
+          "name": "Sebastian",
+          "scores": []
+        },
+        {
+          "id": 3,
+          "name": "Mark",
+          "scores": []
+        },
+        {
+          "id": 4,
+          "name": "Alessio",
+          "scores": []
+        },
+        {
+          "id": 5,
+          "name": "Daniel",
+          "scores": []
+        },
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": []
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": []
+        },
+        {
+          "id": 8,
+          "name": "Juanmi",
+          "scores": []
+        }
+      ]
+    },
+    {
+      "title": "Round 1 - Followers",
+      "judges": [
+        { "name": "Paola" },
+        { "name": "Laura" },
+        { "name": "Pebbles" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Ekaterina B",
+          "scores": []
+        },
+        {
+          "id": 2,
+          "name": "Ekaterina E",
+          "scores": []
+        },
+        {
+          "id": 3,
+          "name": "Sylvia",
+          "scores": []
+        },
+        {
+          "id": 4,
+          "name": "Natalie",
+          "scores": []
+        },
+        {
+          "id": 5,
+          "name": "Mami",
+          "scores": []
+        },
+        {
+          "id": 6,
+          "name": "Deniz",
+          "scores": []
+        },
+        {
+          "id": 7,
+          "name": "Dalia",
+          "scores": []
+        },
+        {
+          "id": 8,
+          "name": "Jodie",
+          "scores": []
+        }
+      ]
+    }
+  ]
+}

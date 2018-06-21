@@ -28,29 +28,14 @@ module.run(["$rootScope", function ($rootScope: RPCalculator.IRootScopeService) 
     };
 }]);
 
-namespace Example {
-    export const workbook: RPCalculator.IWorkbook = {
-        title: "Skating System Example",
-        worksheets: [
-            {
-                title: "Simple Example",
-                judges: [{ name: "John" }, { name: "Beyoncé" }, { name: "Paul" }, { name: "Kelly" }, { name: "George" }, { name: "Michelle" }, { name: "Ringo" }],
-                competitors: []
-            },
-            { title: "Intermediate Example", judges: [], competitors: [] },
-            { title: "Complex Example", judges: [], competitors: [] },
-        ]
-    }
-}
-
 namespace RPCalculator {
     "use strict";
     export const maxJudges: number = 7;
     export const maxCompetitors: number = 8;
     export const textPattern: string = "(^[\\w\\s-]+$)";
     export const numberPattern: string = "(^\\d+$)";
-    export const defaultWorkbookTitle: string = "Unnamed Workbook";
-    export const defaultWorksheetTitle: string = "Unnamed Worksheet";
+    export const defaultWorkbookTitle: string = "Untitled Workbook";
+    export const defaultWorksheetTitle: string = "Untitled Worksheet";
     export interface IRootScopeService extends angular.IRootScopeService { textPattern: string; numberPattern: string; vclass: Function; }
     export interface IStorageService extends angular.storage.IStorageService { workbook: IWorkbook; }
     export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
@@ -90,27 +75,29 @@ namespace RPCalculator {
                 private $workbook: Workbook.Service,
                 private $location: angular.ILocationService,
                 private $window: angular.IWindowService) { }
-            public collapsed: boolean = true;
+            private _collapsed: boolean = true;
+            public get collapsed(): boolean { return this._collapsed; }
+            public toggle($event?: angular.IAngularEvent, state?: boolean): void {
+                if ($event) { $event.preventDefault(); event.stopPropagation(); }
+                this._collapsed = ifBlank(state, !this._collapsed);
+            }
+            public go(path: string, $event: angular.IAngularEvent): void { this.toggle($event); this.$location.path(path); }
             public download($event: angular.IAngularEvent): void {
-                $event.preventDefault();
-                $event.stopPropagation();
+                this.toggle($event, true);
                 let link: HTMLAnchorElement = document.createElement("a");
-                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, true));
+                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, false));
                 link.download = ifBlank(this.$workbook.workbook.title, defaultWorkbookTitle) + ".json";
                 link.click();
             }
             public upload($event: angular.IAngularEvent): void {
-                $event.preventDefault();
-                $event.stopPropagation();
+                this.toggle($event, true);
                 let input = document.getElementById("upload") as HTMLInputElement;
                 input.click();
             }
             public example($event: angular.IAngularEvent): void {
-                $event.preventDefault();
-                $event.stopPropagation();
-                if (this.$window.confirm("Are you sure you want to load the example workbook?")) {
-                    this.$workbook.loadExample().then((): void => { this.$location.path("/workbook"); });
-                }
+                this.toggle($event, true);
+                if (!this.$window.confirm("The current workbook will be overwritten. Are you sure you want to continue?")) return;
+                this.$workbook.loadExample().then((): void => { this.$location.path("/workbook"); });
             }
             public $postLink(): void { }
         }
@@ -175,16 +162,28 @@ namespace RPCalculator {
                 return;
             }
             public validateCompetitors(competitors: ICompetitor[]): boolean { return isBlank(this.competitorsValidationError(competitors)); }
-
         }
         export class Controller {
-            static $inject: string[] = ["$workbook"];
-            constructor(private $workbook: Service) { }
+            static $inject: string[] = ["$workbook", "$window"];
+            constructor(private $workbook: Service, private $window: angular.IWindowService) { }
             public get defaultWorkbookTitle(): string { return defaultWorkbookTitle; }
             public get defaultWorksheetTitle(): string { return defaultWorksheetTitle; }
             public get title(): string { return this.$workbook.title; }
             public set title(title: string) { this.$workbook.title = title; }
             public get worksheets(): IWorksheet[] { return this.$workbook.worksheets; }
+            public add(): void { this.worksheets.push({ title: null, judges: [], competitors: [] }); }
+            public remove(index: number): void {
+                if (!this.$window.confirm("Are you sure you want to delete this worksheet?")) return;
+                this.worksheets.splice(index, 1);
+            }
+            public moveUp(index: number): void { swapUp(this.worksheets, index); }
+            public moveDown(index: number): void { swapDown(this.worksheets, index); }
+            public copy(index: number): void {
+                let copy: IWorksheet = angular.copy(this.worksheets[index]);
+                copy.title = ifBlank(copy.title, defaultWorksheetTitle) + " (Copy)";
+                this.worksheets.push(copy);
+                swap(this.worksheets, this.worksheets.indexOf(copy), index + 1);
+            }
         }
     }
     export namespace Worksheet {
@@ -390,13 +389,15 @@ namespace RPCalculator {
     }
     export namespace Upload {
         export class Controller implements angular.IController {
-            static $inject: string[] = ["$scope", "$element", "$workbook", "$location"];
+            static $inject: string[] = ["$scope", "$element", "$workbook", "$location", "$window"];
             constructor(
                 private $scope: angular.IScope,
                 private $element: angular.IAugmentedJQuery,
                 private $workbook: Workbook.Service,
-                private $location: angular.ILocationService) { }
+                private $location: angular.ILocationService,
+                private $window: angular.IWindowService) { }
             public onChange = (event: JQueryEventObject): void => {
+                if (!this.$window.confirm("The current workbook will be overwritten. Are you sure you want to continue?")) return;
                 let input = event.target as HTMLInputElement;
                 if (!input.files.length) return;
                 let reader: FileReader = new FileReader();

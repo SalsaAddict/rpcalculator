@@ -35,21 +35,6 @@ module.run(["$rootScope", function ($rootScope) {
             return output;
         };
     }]);
-var Example;
-(function (Example) {
-    Example.workbook = {
-        title: "Skating System Example",
-        worksheets: [
-            {
-                title: "Simple Example",
-                judges: [{ name: "John" }, { name: "Beyoncé" }, { name: "Paul" }, { name: "Kelly" }, { name: "George" }, { name: "Michelle" }, { name: "Ringo" }],
-                competitors: []
-            },
-            { title: "Intermediate Example", judges: [], competitors: [] },
-            { title: "Complex Example", judges: [], competitors: [] },
-        ]
-    };
-})(Example || (Example = {}));
 var RPCalculator;
 (function (RPCalculator) {
     "use strict";
@@ -57,8 +42,8 @@ var RPCalculator;
     RPCalculator.maxCompetitors = 8;
     RPCalculator.textPattern = "(^[\\w\\s-]+$)";
     RPCalculator.numberPattern = "(^\\d+$)";
-    RPCalculator.defaultWorkbookTitle = "Unnamed Workbook";
-    RPCalculator.defaultWorksheetTitle = "Unnamed Worksheet";
+    RPCalculator.defaultWorkbookTitle = "Untitled Workbook";
+    RPCalculator.defaultWorksheetTitle = "Untitled Worksheet";
     function isBlank(value) {
         if (angular.isUndefined(value))
             return true;
@@ -104,29 +89,39 @@ var RPCalculator;
                 this.$workbook = $workbook;
                 this.$location = $location;
                 this.$window = $window;
-                this.collapsed = true;
+                this._collapsed = true;
             }
+            Object.defineProperty(Controller.prototype, "collapsed", {
+                get: function () { return this._collapsed; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.prototype.toggle = function ($event, state) {
+                if ($event) {
+                    $event.preventDefault();
+                    event.stopPropagation();
+                }
+                this._collapsed = RPCalculator.ifBlank(state, !this._collapsed);
+            };
+            Controller.prototype.go = function (path, $event) { this.toggle($event); this.$location.path(path); };
             Controller.prototype.download = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
+                this.toggle($event, true);
                 var link = document.createElement("a");
-                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, true));
+                link.href = "data:text/json;charset=utf-8, " + encodeURIComponent(angular.toJson(this.$workbook.workbook, false));
                 link.download = RPCalculator.ifBlank(this.$workbook.workbook.title, RPCalculator.defaultWorkbookTitle) + ".json";
                 link.click();
             };
             Controller.prototype.upload = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
+                this.toggle($event, true);
                 var input = document.getElementById("upload");
                 input.click();
             };
             Controller.prototype.example = function ($event) {
                 var _this = this;
-                $event.preventDefault();
-                $event.stopPropagation();
-                if (this.$window.confirm("Are you sure you want to load the example workbook?")) {
-                    this.$workbook.loadExample().then(function () { _this.$location.path("/workbook"); });
-                }
+                this.toggle($event, true);
+                if (!this.$window.confirm("The current workbook will be overwritten. Are you sure you want to continue?"))
+                    return;
+                this.$workbook.loadExample().then(function () { _this.$location.path("/workbook"); });
             };
             Controller.prototype.$postLink = function () { };
             Controller.$inject = ["$workbook", "$location", "$window"];
@@ -228,8 +223,9 @@ var RPCalculator;
         }());
         Workbook.Service = Service;
         var Controller = /** @class */ (function () {
-            function Controller($workbook) {
+            function Controller($workbook, $window) {
                 this.$workbook = $workbook;
+                this.$window = $window;
             }
             Object.defineProperty(Controller.prototype, "defaultWorkbookTitle", {
                 get: function () { return RPCalculator.defaultWorkbookTitle; },
@@ -252,7 +248,21 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
-            Controller.$inject = ["$workbook"];
+            Controller.prototype.add = function () { this.worksheets.push({ title: null, judges: [], competitors: [] }); };
+            Controller.prototype.remove = function (index) {
+                if (!this.$window.confirm("Are you sure you want to delete this worksheet?"))
+                    return;
+                this.worksheets.splice(index, 1);
+            };
+            Controller.prototype.moveUp = function (index) { RPCalculator.swapUp(this.worksheets, index); };
+            Controller.prototype.moveDown = function (index) { RPCalculator.swapDown(this.worksheets, index); };
+            Controller.prototype.copy = function (index) {
+                var copy = angular.copy(this.worksheets[index]);
+                copy.title = RPCalculator.ifBlank(copy.title, RPCalculator.defaultWorksheetTitle) + " (Copy)";
+                this.worksheets.push(copy);
+                RPCalculator.swap(this.worksheets, this.worksheets.indexOf(copy), index + 1);
+            };
+            Controller.$inject = ["$workbook", "$window"];
             return Controller;
         }());
         Workbook.Controller = Controller;
@@ -617,13 +627,16 @@ var RPCalculator;
     var Upload;
     (function (Upload) {
         var Controller = /** @class */ (function () {
-            function Controller($scope, $element, $workbook, $location) {
+            function Controller($scope, $element, $workbook, $location, $window) {
                 var _this = this;
                 this.$scope = $scope;
                 this.$element = $element;
                 this.$workbook = $workbook;
                 this.$location = $location;
+                this.$window = $window;
                 this.onChange = function (event) {
+                    if (!_this.$window.confirm("The current workbook will be overwritten. Are you sure you want to continue?"))
+                        return;
                     var input = event.target;
                     if (!input.files.length)
                         return;
@@ -640,7 +653,7 @@ var RPCalculator;
             Controller.prototype.$postLink = function () {
                 this.$element.bind("change", this.onChange);
             };
-            Controller.$inject = ["$scope", "$element", "$workbook", "$location"];
+            Controller.$inject = ["$scope", "$element", "$workbook", "$location", "$window"];
             return Controller;
         }());
         Upload.Controller = Controller;

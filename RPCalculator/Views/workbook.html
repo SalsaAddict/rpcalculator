@@ -1,7 +1,7 @@
-﻿<div class="container">
+﻿<div class="container-fluid">
     <div class="card">
         <div class="card-header text-center">
-            <input type="text" class="form-control text-center" ng-model="$ctrl.$workbook.title" placeholder="{{$ctrl.defaultWorkbookTitle}}" />
+            <input type="text" class="form-control text-center" ng-model="$ctrl.$workbook.title" placeholder="{{$ctrl.defaultWorkbookTitle}}" title="Workbook Title" />
         </div>
         <div class="card-body" ng-if="!$ctrl.worksheets.length">
             <p class="card-text">A workbook allows you to collate the scores for multiple competitions.
@@ -10,21 +10,29 @@
         <div class="list-group list-group-flush p-2" ng-repeat="worksheet in $ctrl.worksheets">
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <a ng-href="#!/worksheets/{{$index}}" class="btn btn-primary">
-                        <i class="fa fa-fw fa-edit"></i>
-                        <span>Edit</span>
+                    <a ng-href="#!/worksheets/{{$index}}" class="btn btn-primary" title="Open Worksheet">
+                        <i class="fa fa-fw fa-folder-open"></i>
                     </a>
+                    <button type="button" class="btn btn-secondary" ng-click="$ctrl.moveUp($index)" ng-disabled="$first" title="Move Up">
+                        <i class="fa fa-fw fa-caret-up"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary" ng-click="$ctrl.moveDown($index)" ng-disabled="$last" title="Move Down">
+                        <i class="fa fa-fw fa-caret-down"></i>
+                    </button>
                 </div>
-                <input type="text" class="form-control" ng-model="worksheet.title" placeholder="{{$ctrl.defaultWorksheetTitle}}" />
+                <input type="text" class="form-control" ng-model="worksheet.title" placeholder="{{$ctrl.defaultWorksheetTitle}}" title="Worksheet Title" />
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-danger">
+                    <button type="button" class="btn btn-secondary" ng-click="$ctrl.copy($index)" title="Copy Worksheet">
+                        <i class="fa fa-fw fa-copy"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="$ctrl.remove($index)" title="Delete Worksheet">
                         <i class="fa fa-fw fa-times"></i>
                     </button>
                 </div>
             </div>
         </div>
         <div class="card-footer">
-            <button type="button" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" ng-click="$ctrl.add()">
                 <i class="fa fa-fw fa-plus-circle"></i>
                 <span>Add&hellip;</span>
             </button>

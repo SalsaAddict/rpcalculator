@@ -2,26 +2,26 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th rowspan="2" class="align-middle">
+                <th rowspan="2" class="align-middle p-1">
                     <select class="form-control" ng-model="$ctrl.top" ng-options="top as 'Top ' + top for top in $ctrl.tops"></select>
                 </th>
-                <th colspan="2" rowspan="2" class="align-middle">Competitors</th>
-                <th colspan="{{$ctrl.competitors.length}}" class="align-middle">Tally</th>
+                <th colspan="2" rowspan="2" class="align-middle p-1">Competitors</th>
+                <th colspan="{{$ctrl.competitors.length}}" class="align-middle p-1">Tally</th>
             </tr>
             <tr>
-                <th ng-repeat="competitor in $ctrl.competitors" class="align-middle text-nowrap">1-{{$index + 1}}</th>
+                <th ng-repeat="competitor in $ctrl.competitors" class="align-middle text-nowrap p-1">1-{{$index + 1}}</th>
             </tr>
         </thead>
         <tbody ng-form="form">
             <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank' | limitTo: $ctrl.top">
-                <th class="h3 align-middle bg-primary text-white">
+                <th class="h3 align-middle bg-primary text-white p-1">
                     <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
                 </th>
-                <th class="h4 text-dark align-middle"><strong>#{{competitor.id}}</strong></th>
-                <th class="h4 text-dark align-middle text-nowrap"><strong>{{competitor.name}}</strong></th>
-                <td ng-repeat="item in $ctrl.competitors" class="align-middle">
+                <th class="h4 text-dark align-middle p-1"><strong>#{{competitor.id}}</strong></th>
+                <th class="h4 text-dark align-middle text-nowrap p-1"><strong>{{competitor.name}}</strong></th>
+                <td ng-repeat="item in $ctrl.competitors" class="align-middle p-1">
                     <ng-switch on="!!competitor.tally[$index * 2]">
-                        <div ng-switch-when="true">
+                        <div ng-switch-when="true" ng-class="{ 'text-muted': competitor.tally[($index - 1) * 2] }">
                             <strong>{{-competitor.tally[$index * 2]}}</strong>
                             <br />
                             <small>({{competitor.tally[$index * 2 + 1]}})</small>
