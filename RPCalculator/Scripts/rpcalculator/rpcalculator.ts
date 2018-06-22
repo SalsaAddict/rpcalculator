@@ -248,13 +248,28 @@ namespace RPCalculator {
                     }
                 });
                 let predicates: IPredicate[] = [];
-                for (let i: number = 0; i < this.judges.length * 2; i++) {
+                console.log("Predicates", predicates);
+                for (let i: number = 0; i < this.competitors.length * 2; i++) {
                     predicates.push(function (competitor: ICompetitor): number { return competitor.tally[i]; });
                 }
                 this.$filter("orderBy")(this.competitors, predicates)
                     .forEach((competitor: ICompetitor, index: number): void => {
                         competitor.rank = index + 1;
                     });
+            }
+            public copy(): void {
+                console.log("copy");
+                let copy: IWorksheet = {
+                    title: this.worksheet.title + " (Copy)",
+                    judges: angular.copy(this.judges),
+                    competitors: []
+                }
+                this.$filter("orderBy")(this.$filter("limitTo")(this.$filter("orderBy")(this.competitors, "rank"), this.top), "id")
+                    .forEach((competitor: ICompetitor): void => {
+                        copy.competitors.push({ id: competitor.id, name: competitor.name, scores: [] });
+                    });
+                this.$workbook.worksheets.push(copy);
+                this.$workbook.go("/worksheets", this.$workbook.worksheets.indexOf(copy));
             }
         }
     }

@@ -393,16 +393,31 @@ var RPCalculator;
                     }
                 });
                 var predicates = [];
+                console.log("Predicates", predicates);
                 var _loop_1 = function (i) {
                     predicates.push(function (competitor) { return competitor.tally[i]; });
                 };
-                for (var i = 0; i < this.judges.length * 2; i++) {
+                for (var i = 0; i < this.competitors.length * 2; i++) {
                     _loop_1(i);
                 }
                 this.$filter("orderBy")(this.competitors, predicates)
                     .forEach(function (competitor, index) {
                     competitor.rank = index + 1;
                 });
+            };
+            Controller.prototype.copy = function () {
+                console.log("copy");
+                var copy = {
+                    title: this.worksheet.title + " (Copy)",
+                    judges: angular.copy(this.judges),
+                    competitors: []
+                };
+                this.$filter("orderBy")(this.$filter("limitTo")(this.$filter("orderBy")(this.competitors, "rank"), this.top), "id")
+                    .forEach(function (competitor) {
+                    copy.competitors.push({ id: competitor.id, name: competitor.name, scores: [] });
+                });
+                this.$workbook.worksheets.push(copy);
+                this.$workbook.go("/worksheets", this.$workbook.worksheets.indexOf(copy));
             };
             return Controller;
         }(Worksheet.Controller));
