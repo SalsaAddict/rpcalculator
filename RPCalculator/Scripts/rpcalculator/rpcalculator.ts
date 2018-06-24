@@ -229,7 +229,13 @@ namespace RPCalculator {
                 this.tab = tab;
             }
             public get tabIndex(): number { return this.tabs.indexOf(this.tab); }
-            public get templateUrl(): string { return "Views/" + this.tab.toLowerCase() + ".html"; }
+            public get validateJudges(): boolean { return this.$workbook.validateJudges(this.judges); }
+            public get validateCompetitors(): boolean { return this.$workbook.validateCompetitors(this.competitors); }
+            public get templateUrl(): string {
+                if (!this.validateJudges) return "Views/setup.html";
+                if (!this.validateCompetitors) return "Views/setup.html";
+                return "Views/" + this.tab.toLowerCase() + ".html";
+            }
             public get message(): string {
                 if (this.form.$error.required) return "Each judge must rank every competitor";
                 if (this.form.$error.parse || this.form.$error.min || this.form.$error.max) return "Each score must be a numeric rank between 1 and " + this.competitors.length;

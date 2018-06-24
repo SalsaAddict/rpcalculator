@@ -4,7 +4,7 @@
             <h4 class="card-title">
                 <strong>{{$ctrl.title}}</strong>
             </h4>
-            <ul class="nav nav-tabs nav-fill card-header-tabs" ng-if="form.$valid">
+            <ul class="nav nav-tabs nav-fill card-header-tabs" ng-if="form.$valid && $ctrl.validateJudges && $ctrl.validateCompetitors">
                 <li class="nav-item" ng-repeat="tab in $ctrl.tabs">
                     <a class="nav-link" ng-class="{ 'active': tab === $ctrl.tab }" href="#" ng-click="$ctrl.setTab(tab, $event)">{{tab}}</a>
                 </li>
@@ -14,7 +14,7 @@
             <i class="fa fa-fw" ng-class="{ 'fa-check-circle': form.$valid, 'fa-warning': form.$invalid }"></i>
             <span>{{$ctrl.message}}</span>
         </h5>
-        <div class="card-body">
+        <div class="card-body p-2">
             <ng-include src="$ctrl.templateUrl"></ng-include>
         </div>
         <div class="card-footer">

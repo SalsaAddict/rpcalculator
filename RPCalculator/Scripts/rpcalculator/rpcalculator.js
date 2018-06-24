@@ -356,8 +356,24 @@ var RPCalculator;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(Controller.prototype, "validateJudges", {
+                get: function () { return this.$workbook.validateJudges(this.judges); },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Controller.prototype, "validateCompetitors", {
+                get: function () { return this.$workbook.validateCompetitors(this.competitors); },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Controller.prototype, "templateUrl", {
-                get: function () { return "Views/" + this.tab.toLowerCase() + ".html"; },
+                get: function () {
+                    if (!this.validateJudges)
+                        return "Views/setup.html";
+                    if (!this.validateCompetitors)
+                        return "Views/setup.html";
+                    return "Views/" + this.tab.toLowerCase() + ".html";
+                },
                 enumerable: true,
                 configurable: true
             });

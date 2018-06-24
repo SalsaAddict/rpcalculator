@@ -2,7 +2,7 @@
   "title": "World Salsa Federation Example",
   "worksheets": [
     {
-      "title": "Example #1 - Simple Majority",
+      "title": "Example #1 - Simple Majority (Rule #5)",
       "top": 3,
       "judges": [
         { "name": "John" },
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "title": "Example #2 - Greater Majority",
+      "title": "Example #2 - Greater Majority (Rule #6)",
       "top": 3,
       "judges": [
         { "name": "John" },
@@ -90,7 +90,52 @@
       ]
     },
     {
-      "title": "Example #4 - No Majority for Position Under Review",
+      "title": "Example #3 - Tied Majority (Rule #7)",
+      "top": 3,
+      "judges": [
+        { "name": "John" },
+        { "name": "Beyoncé" },
+        { "name": "Paul" },
+        { "name": "Kelly" },
+        { "name": "George" },
+        { "name": "Michelle" },
+        { "name": "Ringo" }
+      ],
+      "competitors": [
+        {
+          "id": 71,
+          "name": "Fred & Ginger",
+          "scores": [ 3, 1, 6, 1, 1, 2, 1 ]
+        },
+        {
+          "id": 72,
+          "name": "Bonnie & Clyde",
+          "scores": [ 2, 2, 1, 5, 3, 1, 3 ]
+        },
+        {
+          "id": 73,
+          "name": "Mork & Mindy",
+          "scores": [ 1, 5, 4, 2, 2, 6, 2 ]
+        },
+        {
+          "id": 74,
+          "name": "Ross & Rachel",
+          "scores": [ 5, 4, 2, 4, 6, 5, 4 ]
+        },
+        {
+          "id": 75,
+          "name": "Lois & Clarke",
+          "scores": [ 4, 6, 3, 3, 5, 4, 6 ]
+        },
+        {
+          "id": 76,
+          "name": "Sonny & Cher",
+          "scores": [ 6, 3, 5, 6, 4, 3, 5 ]
+        }
+      ]
+    },
+    {
+      "title": "Example #4 - No Majority for Position Under Review (Rule #8)",
       "top": 3,
       "judges": [
         { "name": "John" },

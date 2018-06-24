@@ -120,6 +120,7 @@
       <DependentUpon>rpcalculator.css</DependentUpon>
     </Content>
     <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="favicon.png" />
     <Content Include="index.html" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
@@ -254,6 +255,7 @@
     <Content Include="Views\menu.html" />
     <Content Include="Views\results.html" />
     <Content Include="Views\scoring.html" />
+    <Content Include="Views\setup.html" />
     <Content Include="Views\workbook.html" />
     <Content Include="Views\worksheet.html" />
     <Content Include="Web.config" />
