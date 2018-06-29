@@ -66,37 +66,37 @@
         },
         {
           "id": 2,
-          "name": "Ekaterina E",
-          "scores": []
-        },
-        {
-          "id": 3,
           "name": "Sylvia",
           "scores": []
         },
         {
-          "id": 4,
+          "id": 3,
           "name": "Natalie",
           "scores": []
         },
         {
-          "id": 5,
+          "id": 4,
           "name": "Mami",
           "scores": []
         },
         {
-          "id": 6,
+          "id": 5,
           "name": "Deniz",
           "scores": []
         },
         {
-          "id": 7,
+          "id": 6,
           "name": "Dalia",
           "scores": []
         },
         {
-          "id": 8,
+          "id": 7,
           "name": "Jodie",
+          "scores": []
+        },
+        {
+          "id": 8,
+          "name": "Ekaterina E",
           "scores": []
         }
       ]

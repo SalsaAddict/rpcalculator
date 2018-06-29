@@ -10,5 +10,19 @@
     "inputFiles": [
       "Content/rpcalculator.css"
     ]
+  },
+  {
+    "outputFileName": "rpc.min.js",
+    "inputFiles": [
+      "Scripts/angular.js",
+      "Scripts/angular-route.js",
+      "Scripts/ngStorage.js",
+      "Scripts/rpcalculator/rpcalculator.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "outputMode": "multipleLines"
+    },
+    "includeInProject": false
   }
 ]
