@@ -3,6 +3,7 @@
   "worksheets": [
     {
       "title": "Round 1 - Leaders",
+      "top": 4,
       "judges": [
         { "name": "Biskit" },
         { "name": "Alex" },
@@ -53,6 +54,7 @@
     },
     {
       "title": "Round 1 - Followers",
+      "top": 4,
       "judges": [
         { "name": "Paola" },
         { "name": "Laura" },

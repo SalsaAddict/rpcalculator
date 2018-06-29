@@ -254,7 +254,6 @@ namespace RPCalculator {
                     }
                 });
                 let predicates: IPredicate[] = [];
-                console.log("Predicates", predicates);
                 for (let i: number = 0; i < this.competitors.length * 2; i++) {
                     predicates.push(function (competitor: ICompetitor): number { return competitor.tally[i]; });
                 }
@@ -264,7 +263,6 @@ namespace RPCalculator {
                     });
             }
             public copy(): void {
-                console.log("copy");
                 let copy: IWorksheet = {
                     title: this.worksheet.title + " (Copy)",
                     judges: angular.copy(this.judges),
@@ -306,6 +304,14 @@ namespace RPCalculator {
                     for (let i: number = 0; i < this.c; i++) {
                         let ngModel: angular.INgModelController = this.form[this.name(i, this.j)];
                         ngModel.$validate();
+                    }
+                    if (this.ngModel.$valid) {
+                        let nj: number = (this.c + 1 < this.worksheet.competitors.length) ? this.j : (this.j + 1) % this.worksheet.judges.length;
+                        let nc: number = (this.c + 1) % this.worksheet.competitors.length;
+                        let name: string = this.name(nc, nj);
+                        let input: HTMLInputElement = document.getElementsByName(name)[0] as HTMLInputElement;
+                        input.focus();
+                        input.select();
                     }
                 });
             }
