@@ -1,0 +1,27 @@
+﻿CACHE MANIFEST
+# VERSION 2.0
+
+favicon.png
+Content/bootstrap.min.css
+Content/bootswatch/yeti/bootstrap.min.css
+Content/font-awesome.min.css
+Content/rpcalculator.min.css
+fonts/fontawesome-webfont.woff2?v=4.7.0
+rpc.min.js
+Views/calculation.html
+Views/competitors.html
+Views/dialog.html
+Views/editor.html
+Views/judges.html
+Views/menu.html
+Views/results.html
+Views/scoring.html
+Views/setup.html
+Views/workbook.html
+Views/worksheet.html
+
+NETWORK:
+//fonts.googleapis.com/css
+
+FALLBACK:
+//fonts.googleapis.com/css fonts/opensans.css
