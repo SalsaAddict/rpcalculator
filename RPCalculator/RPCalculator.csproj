@@ -207,6 +207,7 @@
     <Content Include="Scripts\angular-route.min.js.map" />
     <Content Include="ScoreSheets.xlsx" />
     <Content Include="rpcalculator.manifest" />
+    <Content Include="results.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
