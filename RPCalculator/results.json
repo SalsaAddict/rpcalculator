@@ -69,6 +69,70 @@
       ]
     },
     {
+      "title": "Round 2 - Leaders",
+      "judges": [
+        { "name": "Biskit" },
+        { "name": "Alex" },
+        { "name": "Pierre" }
+      ],
+      "competitors": [
+        {
+          "id": 2,
+          "name": "Sebastian",
+          "scores": [ 4, 3, 4 ],
+          "tally": [ null, null, null, null, null, null, -3, 11 ],
+          "rank": 4
+        },
+        {
+          "id": 5,
+          "name": "Daniel",
+          "scores": [ 3, 4, 3 ],
+          "tally": [ null, null, null, null, -2, 6, -3, 10 ],
+          "rank": 3
+        },
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6, -3, 6, -3, 6 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Final - Leaders",
+      "judges": [
+        { "name": "Pebbles" },
+        { "name": "Anglea" },
+        { "name": "Crowd" }
+      ],
+      "competitors": [
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
       "title": "Round 1 - Followers",
       "top": 4,
       "judges": [
@@ -136,45 +200,6 @@
       ]
     },
     {
-      "title": "Round 2 - Leaders",
-      "judges": [
-        { "name": "Biskit" },
-        { "name": "Alex" },
-        { "name": "Pierre" }
-      ],
-      "competitors": [
-        {
-          "id": 2,
-          "name": "Sebastian",
-          "scores": [ 4, 3, 4 ],
-          "tally": [ null, null, null, null, null, null, -3, 11 ],
-          "rank": 4
-        },
-        {
-          "id": 5,
-          "name": "Daniel",
-          "scores": [ 3, 4, 3 ],
-          "tally": [ null, null, null, null, -2, 6, -3, 10 ],
-          "rank": 3
-        },
-        {
-          "id": 6,
-          "name": "Kadeem",
-          "scores": [ 2, 2, 2 ],
-          "tally": [ null, null, -3, 6, -3, 6, -3, 6 ],
-          "rank": 2
-        },
-        {
-          "id": 7,
-          "name": "Perreira",
-          "scores": [ 1, 1, 1 ],
-          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3 ],
-          "rank": 1
-        }
-      ],
-      "top": 3
-    },
-    {
       "title": "Round 2 - Followers",
       "judges": [
         { "name": "Angela" },
@@ -214,22 +239,26 @@
       "top": 2
     },
     {
-      "title": "Round 1 - Followers (Copy) (Copy)",
+      "title": "Final - Followers",
       "judges": [
-        { "name": "Angela" },
-        { "name": "Laura" },
-        { "name": "Pebbles" }
+        { "name": "Alex" },
+        { "name": "Pierre" },
+        { "name": "Crowd" }
       ],
       "competitors": [
         {
           "id": 2,
           "name": "Sylvia",
-          "scores": []
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6 ],
+          "rank": 2
         },
         {
           "id": 8,
           "name": "Ekaterina E",
-          "scores": []
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3 ],
+          "rank": 1
         }
       ]
     }
