@@ -18,6 +18,7 @@ module.config(["$routeProvider", function ($routeProvider) {
             .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
             .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
             .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
+            .when("/bos", { templateUrl: "Views/bos.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$ctrl" })
             .otherwise({ redirectTo: "/workbook" })
             .caseInsensitiveMatch = true;
     }]);
@@ -702,6 +703,21 @@ var RPCalculator;
         }
         Upload.DirectiveFactory = DirectiveFactory;
     })(Upload = RPCalculator.Upload || (RPCalculator.Upload = {}));
+})(RPCalculator || (RPCalculator = {}));
+(function (RPCalculator) {
+    "use strict";
+    var Results;
+    (function (Results) {
+        var BOS;
+        (function (BOS) {
+            var Controller = /** @class */ (function () {
+                function Controller() {
+                }
+                return Controller;
+            }());
+            BOS.Controller = Controller;
+        })(BOS = Results.BOS || (Results.BOS = {}));
+    })(Results = RPCalculator.Results || (RPCalculator.Results = {}));
 })(RPCalculator || (RPCalculator = {}));
 module.service("$workbook", RPCalculator.Workbook.Service);
 module.controller("menuController", RPCalculator.Menu.Controller);

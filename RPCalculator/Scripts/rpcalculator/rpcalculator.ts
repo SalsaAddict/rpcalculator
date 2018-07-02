@@ -10,6 +10,7 @@ module.config(["$routeProvider", function ($routeProvider: angular.route.IRouteP
         .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
         .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
         .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
+        .when("/bos", { templateUrl: "Views/bos.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$ctrl" })
         .otherwise({ redirectTo: "/workbook" })
         .caseInsensitiveMatch = true;
 }]);
@@ -445,6 +446,17 @@ namespace RPCalculator {
                 return { restrict: "A", scope: false, controller: Controller };
             };
             return factory;
+        }
+    }
+}
+
+namespace RPCalculator {
+    "use strict";
+    export namespace Results {
+        export namespace BOS {
+            export class Controller {
+
+            }
         }
     }
 }
