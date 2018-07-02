@@ -1,8 +1,12 @@
-﻿body{
+﻿body {
     padding-top: 70px;
 }
 
 table, thead, tbody, tfoot, td, th {
     border-collapse: collapse !important;
     border: 1px solid silver !important;
+}
+
+.page-break-after {
+    page-break-after: always !important;
 }

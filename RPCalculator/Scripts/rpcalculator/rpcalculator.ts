@@ -10,7 +10,7 @@ module.config(["$routeProvider", function ($routeProvider: angular.route.IRouteP
         .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
         .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
         .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
-        .when("/bos", { templateUrl: "Views/bos.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$ctrl" })
+        .when("/bos", { templateUrl: "Views/publish.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$publish" })
         .otherwise({ redirectTo: "/workbook" })
         .caseInsensitiveMatch = true;
 }]);
@@ -455,7 +455,14 @@ namespace RPCalculator {
     export namespace Results {
         export namespace BOS {
             export class Controller {
-
+                static $inject: string[] = ["$http"];
+                constructor(private $http: angular.IHttpService) {
+                    $http.get("bos.json").then((response: angular.IHttpPromiseCallbackArg<IWorkbook>): void => {
+                        this.workbook = response.data;
+                    });
+                }
+                public ranks: string[] = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+                public workbook: IWorkbook;
             }
         }
     }

@@ -205,6 +205,7 @@
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
+    <Content Include="bos.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -250,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="trophy.jpg" />
+    <Content Include="Views\publish.html" />
     <Content Include="Views\calculation.html" />
     <Content Include="Views\competitors.html" />
     <Content Include="Views\dialog.html" />
