@@ -2,19 +2,20 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th rowspan="2" class="align-middle p-1">Competitors</th>
+                <th rowspan="2" class="align-middle p-1" colspan="2">Competitors</th>
                 <th colspan="{{$ctrl.judges.length}}" class="align-middle p-1">Judges</th>
                 <th colspan="{{$ctrl.competitors.length}}" class="align-middle p-1">Tally</th>
                 <th rowspan="2" class="align-middle p-1">Results</th>
             </tr>
             <tr>
-                <th ng-repeat="judge in $ctrl.judges" class="align-middle text-nowrap p-1">#{{$index + 1}}</th>
+                <th ng-repeat="judge in $ctrl.judges" class="align-middle text-nowrap p-1">{{judge.name}}</th>
                 <th ng-repeat="competitor in $ctrl.competitors" class="align-middle text-nowrap p-1">1-{{$index + 1}}</th>
             </tr>
         </thead>
         <tbody ng-form="form">
             <tr ng-repeat="competitor in $ctrl.competitors">
                 <th class="align-middle p-1">#{{competitor.id}}</th>
+                <th class="align-middle p-1">{{competitor.name}}</th>
                 <td class="align-middle p-1" ng-repeat="judge in $ctrl.judges">{{competitor.scores[$index]}}</td>
                 <td ng-repeat="item in $ctrl.competitors" class="align-middle p-1">
                     <ng-switch on="!!competitor.tally[$index * 2]">

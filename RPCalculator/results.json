@@ -1,0 +1,266 @@
+{
+  "title": "Muévelo Social Dance Competition",
+  "worksheets": [
+    {
+      "title": "Round 1 - Leaders",
+      "top": 4,
+      "judges": [
+        { "name": "Biskit" },
+        { "name": "Alex" },
+        { "name": "Pierre" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Fernando",
+          "scores": [ 5, 2, 8 ],
+          "tally": [ null, null, null, null, null, null, null, null, -2, 7, -2, 7, -2, 7, -3, 15 ],
+          "rank": 5
+        },
+        {
+          "id": 2,
+          "name": "Sebastian",
+          "scores": [ 3, 4, 4 ],
+          "tally": [ null, null, null, null, null, null, -3, 11, -3, 11, -3, 11, -3, 11, -3, 11 ],
+          "rank": 3
+        },
+        {
+          "id": 3,
+          "name": "Mark",
+          "scores": [ 6, 7, 3 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, -2, 9, -3, 16, -3, 16 ],
+          "rank": 6
+        },
+        {
+          "id": 4,
+          "name": "Alessio",
+          "scores": [ 8, 8, 5 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, null, null, -3, 21 ],
+          "rank": 8
+        },
+        {
+          "id": 5,
+          "name": "Daniel",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3 ],
+          "rank": 1
+        },
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": [ 4, 3, 6 ],
+          "tally": [ null, null, null, null, null, null, -2, 7, -2, 7, -3, 13, -3, 13, -3, 13 ],
+          "rank": 4
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": [ 2, 5, 2 ],
+          "tally": [ null, null, -2, 4, -2, 4, -2, 4, -3, 9, -3, 9, -3, 9, -3, 9 ],
+          "rank": 2
+        },
+        {
+          "id": 8,
+          "name": "Juanmi",
+          "scores": [ 7, 6, 7 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, -3, 20, -3, 20 ],
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "title": "Round 2 - Leaders",
+      "judges": [
+        { "name": "Biskit" },
+        { "name": "Alex" },
+        { "name": "Pierre" }
+      ],
+      "competitors": [
+        {
+          "id": 2,
+          "name": "Sebastian",
+          "scores": [ 4, 3, 4 ],
+          "tally": [ null, null, null, null, null, null, -3, 11 ],
+          "rank": 4
+        },
+        {
+          "id": 5,
+          "name": "Daniel",
+          "scores": [ 3, 4, 3 ],
+          "tally": [ null, null, null, null, -2, 6, -3, 10 ],
+          "rank": 3
+        },
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6, -3, 6, -3, 6 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Final - Leaders",
+      "judges": [
+        { "name": "Pebbles" },
+        { "name": "Anglea" },
+        { "name": "Crowd" }
+      ],
+      "competitors": [
+        {
+          "id": 6,
+          "name": "Kadeem",
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Perreira",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Round 1 - Followers",
+      "top": 4,
+      "judges": [
+        { "name": "Angela" },
+        { "name": "Laura" },
+        { "name": "Pebbles" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Ekaterina B",
+          "scores": [ 3, 3, 6 ],
+          "tally": [ null, null, null, null, -2, 6, -2, 6, -2, 6, -3, 12, -3, 12, -3, 12 ],
+          "rank": 3
+        },
+        {
+          "id": 2,
+          "name": "Sylvia",
+          "scores": [ 4, 4, 1 ],
+          "tally": [ null, null, null, null, null, null, -3, 9, -3, 9, -3, 9, -3, 9, -3, 9 ],
+          "rank": 4
+        },
+        {
+          "id": 3,
+          "name": "Natalie",
+          "scores": [ 7, 6, 3 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, -2, 9, -3, 16, -3, 16 ],
+          "rank": 6
+        },
+        {
+          "id": 4,
+          "name": "Mami",
+          "scores": [ 5, 7, 5 ],
+          "tally": [ null, null, null, null, null, null, null, null, -2, 10, -2, 10, -3, 17, -3, 17 ],
+          "rank": 5
+        },
+        {
+          "id": 5,
+          "name": "Regina",
+          "scores": [ 8, 5, 7 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, -2, 12, -3, 20 ],
+          "rank": 8
+        },
+        {
+          "id": 6,
+          "name": "Dalia",
+          "scores": [ 2, 2, 8 ],
+          "tally": [ null, null, -2, 4, -2, 4, -2, 4, -2, 4, -2, 4, -2, 4, -3, 12 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Jodie",
+          "scores": [ 6, 8, 4 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, -2, 10, -2, 10, -3, 18 ],
+          "rank": 7
+        },
+        {
+          "id": 8,
+          "name": "Ekaterina E",
+          "scores": [ 1, 1, 2 ],
+          "tally": [ -2, 2, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4 ],
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "title": "Round 2 - Followers",
+      "judges": [
+        { "name": "Angela" },
+        { "name": "Laura" },
+        { "name": "Pebbles" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Ekaterina B",
+          "scores": [ 3, 4, 2 ],
+          "tally": [ null, null, null, null, -2, 5, -3, 9 ],
+          "rank": 3
+        },
+        {
+          "id": 2,
+          "name": "Sylvia",
+          "scores": [ 2, 3, 3 ],
+          "tally": [ null, null, null, null, -3, 8, -3, 8 ],
+          "rank": 2
+        },
+        {
+          "id": 6,
+          "name": "Dalia",
+          "scores": [ 4, 1, 4 ],
+          "tally": [ null, null, null, null, null, null, -3, 9 ],
+          "rank": 4
+        },
+        {
+          "id": 8,
+          "name": "Ekaterina E",
+          "scores": [ 1, 2, 1 ],
+          "tally": [ -2, 2, -3, 4, -3, 4, -3, 4 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Final - Followers",
+      "judges": [
+        { "name": "Alex" },
+        { "name": "Pierre" },
+        { "name": "Crowd" }
+      ],
+      "competitors": [
+        {
+          "id": 2,
+          "name": "Sylvia",
+          "scores": [ 2, 2, 2 ],
+          "tally": [ null, null, -3, 6 ],
+          "rank": 2
+        },
+        {
+          "id": 8,
+          "name": "Ekaterina E",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ]
+    }
+  ]
+}
