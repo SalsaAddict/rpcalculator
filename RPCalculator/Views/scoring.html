@@ -24,7 +24,7 @@
                 <th class="align-middle p-1">#{{competitor.id}}</th>
                 <th class="align-middle p-1">{{competitor.name}}</th>
                 <td ng-repeat="judge in $ctrl.judges" class="align-middle p-1">
-                    <input type="text" name="{{$score.name()}}" tabindex="{{$score.tabIndex}}"
+                    <input type="text" name="{{$score.name()}}" tabindex="{{$score.tabIndex}}" pattern="[0-9]*"
                            class="form-control text-center" ng-class="$score.ngClass"
                            ng-model="$score.value" integer score required />
                 </td>
