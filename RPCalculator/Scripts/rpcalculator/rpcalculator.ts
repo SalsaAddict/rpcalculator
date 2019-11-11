@@ -431,7 +431,7 @@ namespace RPCalculator {
                 let reader: FileReader = new FileReader();
                 reader.onload = () => {
                     this.$scope.$apply((): void => {
-                        this.$workbook.workbook = angular.fromJson(reader.result);
+                        this.$workbook.workbook = angular.fromJson(reader.result as string);
                         this.$location.path("/workbook");
                     });
                 };

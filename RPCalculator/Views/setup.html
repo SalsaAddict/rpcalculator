@@ -3,7 +3,7 @@
     <a ng-href="#!/judges/{{$ctrl.index}}" class="btn" ng-class="{ 'btn-success': $ctrl.validateJudges, 'btn-danger': !$ctrl.validateJudges }">
         <i class="fa fa-fw" ng-class="{ 'fa-check-circle': $ctrl.validateJudges, 'fa-warning': !$ctrl.validateJudges }"></i>
         <span>Judges</span>
-        <span>({{$ctrl.competitors.length || 0}})</span>
+        <span>({{$ctrl.judges.length || 0}})</span>
     </a>
 </p>
 <p class="card-text">There must be a minimum of 2 competitors and a maximum of 8</p>
@@ -11,6 +11,6 @@
     <a ng-href="#!/competitors/{{$ctrl.index}}" class="btn" ng-class="{ 'btn-success': $ctrl.validateCompetitors, 'btn-danger': !$ctrl.validateCompetitors }">
         <i class="fa fa-fw" ng-class="{ 'fa-check-circle': $ctrl.validateCompetitors, 'fa-warning': !$ctrl.validateCompetitors }"></i>
         <span>Competitors</span>
-        <span>({{$ctrl.judges.length || 0}})</span>
+        <span>({{$ctrl.competitors.length || 0}})</span>
     </a>
 </p>
