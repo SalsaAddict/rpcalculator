@@ -426,7 +426,7 @@ var RPCalculator;
             };
             Controller.prototype.copy = function () {
                 var copy = {
-                    title: this.worksheet.title + " (Copy)",
+                    title: RPCalculator.ifBlank(this.worksheet.title, RPCalculator.defaultWorksheetTitle) + " (Copy)",
                     judges: angular.copy(this.judges),
                     competitors: []
                 };

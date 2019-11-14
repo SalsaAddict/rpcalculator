@@ -265,7 +265,7 @@ namespace RPCalculator {
             }
             public copy(): void {
                 let copy: IWorksheet = {
-                    title: this.worksheet.title + " (Copy)",
+                    title: ifBlank(this.worksheet.title, defaultWorksheetTitle) + " (Copy)",
                     judges: angular.copy(this.judges),
                     competitors: []
                 }
