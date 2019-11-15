@@ -130,7 +130,7 @@
           "rank": 1
         }
       ],
-      "top": 2
+      "top": 1
     },
     {
       "title": "Round 1 - Followers",
@@ -260,7 +260,8 @@
           "tally": [ -3, 3, -3, 3 ],
           "rank": 1
         }
-      ]
+      ],
+      "top": 1
     }
   ]
 }
