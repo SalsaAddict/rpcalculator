@@ -1,0 +1,90 @@
+{
+  "title": "BOS Social Dance Competition 2019",
+  "worksheets": [
+    {
+      "title": "Round 1 - Leaders",
+      "judges": [
+        { "name": "Julian" },
+        { "name": "Alex" },
+        { "name": "Gabriel" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Kadeem",
+          "scores": []
+        },
+        {
+          "id": 2,
+          "name": "Bryan",
+          "scores": []
+        },
+        {
+          "id": 3,
+          "name": "Justin",
+          "scores": []
+        },
+        {
+          "id": 4,
+          "name": "Kenny",
+          "scores": []
+        },
+        {
+          "id": 5,
+          "name": "Omar",
+          "scores": []
+        },
+        {
+          "id": 6,
+          "name": "Amir",
+          "scores": []
+        },
+        {
+          "id": 7,
+          "name": "Usman",
+          "scores": []
+        },
+        {
+          "id": 8,
+          "name": "Ozan",
+          "scores": []
+        }
+      ]
+    },
+    {
+      "title": "Round 1 - Followers",
+      "judges": [
+        { "name": "Angela" },
+        { "name": "Pebbles" },
+        { "name": "Rasa" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Chiara",
+          "scores": []
+        },
+        {
+          "id": 2,
+          "name": "Sharon",
+          "scores": []
+        },
+        {
+          "id": 3,
+          "name": "Dalia",
+          "scores": []
+        },
+        {
+          "id": 4,
+          "name": "Helena",
+          "scores": []
+        },
+        {
+          "id": 5,
+          "name": "Kate",
+          "scores": []
+        }
+      ]
+    }
+  ]
+}
