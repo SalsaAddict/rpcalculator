@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema for RPCalculator Workbook",
+  "type": "object",
+  "additionalItems": false,
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "title": { "type": "string" },
+    "worksheets": { "$ref": "#/definitions/worksheets" }
+  },
+  "definitions": {
+    "worksheets": {
+      "type": "array",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/worksheet" }
+    },
+    "worksheet": {
+      "type": "object",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "top": { "type": "number" },
+        "judges": { "$ref": "#/definitions/judges" },
+        "competitors": { "$ref": "#/definitions/competitors" }
+      },
+      "required": [ "title", "top", "judges", "competitors" ]
+    },
+    "judges": {
+      "type": "array",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "minItems": 3,
+      "maxItems": 7,
+      "items": { "$ref": "#/definitions/judge" }
+    },
+    "judge": {
+      "type": "object",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": [ "name" ]
+    },
+    "competitors": {
+      "type": "array",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "minItems": 2,
+      "maxItems": 8,
+      "items": { "$ref": "#/definitions/competitor" }
+    },
+    "competitor": {
+      "type": "object",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string" },
+        "scores": { "$ref": "#/definitions/scores" },
+        "tally": { "$ref": "#/definitions/tally" },
+        "rank": { "type": "number" }
+      },
+      "required": [ "id", "name", "scores" ]
+    },
+    "scores": {
+      "type": "array",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "maxItems": 7,
+      "items": { "$ref": "#/definitions/score" }
+    },
+    "score": {
+      "type": "number",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "minimum": 1,
+      "maximum": 8
+    },
+    "tally": {
+      "type": "array",
+      "additionalItems": false,
+      "additionalProperties": false,
+      "maxItems": 16,
+      "items": {
+        "type": [ "number", "null" ],
+        "additionalItems": false,
+        "additionalProperties": false
+      }
+    }
+  }
+}

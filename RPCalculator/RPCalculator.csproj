@@ -248,6 +248,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="schema.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="trophy.jpg" />
@@ -310,6 +311,7 @@
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
+      <UserProperties bos19_1json__JSONSchema="workbook-schema.json" />
     </VisualStudio>
     <MonoDevelop>
       <Properties>

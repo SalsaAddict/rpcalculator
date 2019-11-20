@@ -1,8 +1,10 @@
 {
+  "$schema": "schema.json",
   "title": "BOS Social Dance Competition 2019",
   "worksheets": [
     {
       "title": "Round 1 - Leaders",
+      "top": 4,
       "judges": [
         { "name": "Julian" },
         { "name": "Alex" },
@@ -53,6 +55,7 @@
     },
     {
       "title": "Round 1 - Followers",
+      "top": 4,
       "judges": [
         { "name": "Angela" },
         { "name": "Pebbles" },
@@ -82,6 +85,11 @@
         {
           "id": 5,
           "name": "Kate",
+          "scores": []
+        },
+        {
+          "id": 6,
+          "name": "Ashwini",
           "scores": []
         }
       ]
