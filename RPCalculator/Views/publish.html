@@ -18,7 +18,8 @@
                     </tr>
                 </thead>
                 <tbody ng-form="form">
-                    <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'id'">
+                    <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank'"
+                        ng-class="{ 'text-muted': competitor.rank > $ctrl.top }">
                         <th class="align-middle p-1">#{{competitor.id}}</th>
                         <th class="align-middle p-1">{{competitor.name}}</th>
                         <td class="align-middle p-1 h5" ng-repeat="judge in $ctrl.judges">{{competitor.scores[$index]}}</td>
@@ -32,7 +33,7 @@
                                 <small ng-switch-when="false" class="text-muted">No<br />Majority</small>
                             </ng-switch>
                         </td>
-                        <th class="h4 text-dark align-middle p-1">
+                        <th class="h4 align-middle p-1">
                             <span>{{$publish.ranks[competitor.rank - 1][0]}}<sup>{{$publish.ranks[competitor.rank - 1][1]}}{{$publish.ranks[competitor.rank - 1][2]}}</sup></span>
                         </th>
                     </tr>
