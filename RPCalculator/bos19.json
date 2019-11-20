@@ -64,32 +64,32 @@
       "competitors": [
         {
           "id": 1,
-          "name": "Chiara",
-          "scores": []
-        },
-        {
-          "id": 2,
-          "name": "Sharon",
-          "scores": []
-        },
-        {
-          "id": 3,
           "name": "Dalia",
           "scores": []
         },
         {
-          "id": 4,
-          "name": "Helena",
+          "id": 2,
+          "name": "Chiara",
           "scores": []
         },
         {
-          "id": 5,
+          "id": 3,
+          "name": "Sharon",
+          "scores": []
+        },
+        {
+          "id": 4,
           "name": "Kate",
           "scores": []
         },
         {
-          "id": 6,
+          "id": 5,
           "name": "Ashwini",
+          "scores": []
+        },
+        {
+          "id": 6,
+          "name": "Milya",
           "scores": []
         }
       ]
