@@ -10,7 +10,7 @@ module.config(["$routeProvider", function ($routeProvider: angular.route.IRouteP
         .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
         .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
         .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
-        .when("/bos", { templateUrl: "Views/publish.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$publish" })
+        .when("/publish", { templateUrl: "Views/publish.html", controller: RPCalculator.Publish.Controller, controllerAs: "$publish" })
         .otherwise({ redirectTo: "/workbook" })
         .caseInsensitiveMatch = true;
 }]);
@@ -75,11 +75,12 @@ namespace RPCalculator {
     "use strict";
     export namespace Menu {
         export class Controller implements angular.IController {
-            static $inject: string[] = ["$workbook", "$location", "$window"];
+            static $inject: string[] = ["$workbook", "$location", "$window", "$timeout"];
             constructor(
                 private $workbook: Workbook.Service,
                 private $location: angular.ILocationService,
-                private $window: angular.IWindowService) { }
+                private $window: angular.IWindowService,
+                private $timeout: angular.ITimeoutService) { }
             private _collapsed: boolean = true;
             public get collapsed(): boolean { return this._collapsed; }
             public toggle($event?: angular.IAngularEvent, state?: boolean): void {
@@ -103,6 +104,10 @@ namespace RPCalculator {
                 this.toggle($event, true);
                 if (!this.$window.confirm("The current workbook will be overwritten. Are you sure you want to continue?")) return;
                 this.$workbook.loadExample().then((): void => { this.$location.path("/workbook"); });
+            }
+            public publish($event: angular.IAngularEvent): void {
+                this.go("/publish", $event);
+                this.$timeout(1000).then((): void => { this.$window.print(); });
             }
             public $postLink(): void { }
         }
@@ -354,7 +359,8 @@ namespace RPCalculator {
                         this.$window.alert("Please save or undo your changes before continuing.");
                     }
                 }));
-            } private property: PropertyType;
+            }
+            private property: PropertyType;
             private min: number;
             private max: number;
             private get validator(): IValidatorFn { return this.$workbook[this.property.toLowerCase() + "ValidationError"]; };
@@ -452,22 +458,12 @@ namespace RPCalculator {
             return factory;
         }
     }
-}
-
-namespace RPCalculator {
-    "use strict";
-    export namespace Results {
-        export namespace BOS {
-            export class Controller {
-                static $inject: string[] = ["$http"];
-                constructor(private $http: angular.IHttpService) {
-                    $http.get("bos.json").then((response: angular.IHttpPromiseCallbackArg<IWorkbook>): void => {
-                        this.workbook = response.data;
-                    });
-                }
-                public ranks: string[] = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
-                public workbook: IWorkbook;
-            }
+    export namespace Publish {
+        export class Controller {
+            static $inject: string[] = ["$workbook"];
+            constructor(public $workbook: Workbook.Service) { }
+            public get workbook(): IWorkbook { return this.$workbook.workbook; }
+            public ranks: string[] = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
         }
     }
 }

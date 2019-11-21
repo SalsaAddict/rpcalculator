@@ -21,7 +21,7 @@ module.config(["$routeProvider", function ($routeProvider) {
             .when("/worksheets/:index", { templateUrl: "Views/worksheet.html", controller: RPCalculator.Scoring.Controller, controllerAs: "$ctrl" })
             .when("/judges/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Judges.Controller, controllerAs: "$ctrl" })
             .when("/competitors/:index", { templateUrl: "Views/editor.html", controller: RPCalculator.Competitors.Controller, controllerAs: "$ctrl" })
-            .when("/bos", { templateUrl: "Views/publish.html", controller: RPCalculator.Results.BOS.Controller, controllerAs: "$publish" })
+            .when("/publish", { templateUrl: "Views/publish.html", controller: RPCalculator.Publish.Controller, controllerAs: "$publish" })
             .otherwise({ redirectTo: "/workbook" })
             .caseInsensitiveMatch = true;
     }]);
@@ -92,10 +92,11 @@ var RPCalculator;
     var Menu;
     (function (Menu) {
         var Controller = /** @class */ (function () {
-            function Controller($workbook, $location, $window) {
+            function Controller($workbook, $location, $window, $timeout) {
                 this.$workbook = $workbook;
                 this.$location = $location;
                 this.$window = $window;
+                this.$timeout = $timeout;
                 this._collapsed = true;
             }
             Object.defineProperty(Controller.prototype, "collapsed", {
@@ -130,8 +131,13 @@ var RPCalculator;
                     return;
                 this.$workbook.loadExample().then(function () { _this.$location.path("/workbook"); });
             };
+            Controller.prototype.publish = function ($event) {
+                var _this = this;
+                this.go("/publish", $event);
+                this.$timeout(1000).then(function () { _this.$window.print(); });
+            };
             Controller.prototype.$postLink = function () { };
-            Controller.$inject = ["$workbook", "$location", "$window"];
+            Controller.$inject = ["$workbook", "$location", "$window", "$timeout"];
             return Controller;
         }());
         Menu.Controller = Controller;
@@ -709,28 +715,23 @@ var RPCalculator;
         }
         Upload.DirectiveFactory = DirectiveFactory;
     })(Upload = RPCalculator.Upload || (RPCalculator.Upload = {}));
-})(RPCalculator || (RPCalculator = {}));
-(function (RPCalculator) {
-    "use strict";
-    var Results;
-    (function (Results) {
-        var BOS;
-        (function (BOS) {
-            var Controller = /** @class */ (function () {
-                function Controller($http) {
-                    var _this = this;
-                    this.$http = $http;
-                    this.ranks = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
-                    $http.get("bos.json").then(function (response) {
-                        _this.workbook = response.data;
-                    });
-                }
-                Controller.$inject = ["$http"];
-                return Controller;
-            }());
-            BOS.Controller = Controller;
-        })(BOS = Results.BOS || (Results.BOS = {}));
-    })(Results = RPCalculator.Results || (RPCalculator.Results = {}));
+    var Publish;
+    (function (Publish) {
+        var Controller = /** @class */ (function () {
+            function Controller($workbook) {
+                this.$workbook = $workbook;
+                this.ranks = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+            }
+            Object.defineProperty(Controller.prototype, "workbook", {
+                get: function () { return this.$workbook.workbook; },
+                enumerable: true,
+                configurable: true
+            });
+            Controller.$inject = ["$workbook"];
+            return Controller;
+        }());
+        Publish.Controller = Controller;
+    })(Publish = RPCalculator.Publish || (RPCalculator.Publish = {}));
 })(RPCalculator || (RPCalculator = {}));
 module.service("$workbook", RPCalculator.Workbook.Service);
 module.controller("menuController", RPCalculator.Menu.Controller);
