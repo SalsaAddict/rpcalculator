@@ -9,6 +9,7 @@
     "title": { "type": "string" },
     "worksheets": { "$ref": "#/definitions/worksheets" }
   },
+  "required": [ "title", "worksheets" ],
   "definitions": {
     "worksheets": {
       "type": "array",
@@ -27,7 +28,7 @@
         "judges": { "$ref": "#/definitions/judges" },
         "competitors": { "$ref": "#/definitions/competitors" }
       },
-      "required": [ "title", "top", "judges", "competitors" ]
+      "required": [ "title", "judges", "competitors" ]
     },
     "judges": {
       "type": "array",

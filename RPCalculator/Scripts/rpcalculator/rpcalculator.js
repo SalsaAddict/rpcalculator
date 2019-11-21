@@ -42,6 +42,9 @@ module.run(["$rootScope", function ($rootScope) {
 var RPCalculator;
 (function (RPCalculator) {
     "use strict";
+})(RPCalculator || (RPCalculator = {}));
+(function (RPCalculator) {
+    "use strict";
     RPCalculator.maxJudges = 7;
     RPCalculator.maxCompetitors = 8;
     RPCalculator.textPattern = "(^[\\w\\s-]+$)";

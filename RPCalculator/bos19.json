@@ -1,5 +1,4 @@
 {
-  "$schema": "schema.json",
   "title": "BOS Social Dance Competition 2019",
   "worksheets": [
     {
@@ -59,7 +58,7 @@
       "judges": [
         { "name": "Angela" },
         { "name": "Pebbles" },
-        { "name": "Rasa" }
+        { "name": "Andrea" }
       ],
       "competitors": [
         {
@@ -90,6 +89,16 @@
         {
           "id": 6,
           "name": "Milya",
+          "scores": []
+        },
+        {
+          "id": 7,
+          "name": "Patricia",
+          "scores": []
+        },
+        {
+          "id": 8,
+          "name": "Marzena",
           "scores": []
         }
       ]

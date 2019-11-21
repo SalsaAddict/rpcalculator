@@ -31,6 +31,14 @@ module.run(["$rootScope", function ($rootScope: RPCalculator.IRootScopeService) 
 
 namespace RPCalculator {
     "use strict";
+    export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
+    export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; top?: number; }
+    export interface IJudge { name: string; }
+    export interface ICompetitor { id: number; name: string; scores: number[]; tally?: Array<number | null>; rank?: number; }
+}
+
+namespace RPCalculator {
+    "use strict";
     export const maxJudges: number = 7;
     export const maxCompetitors: number = 8;
     export const textPattern: string = "(^[\\w\\s-]+$)";
@@ -39,10 +47,6 @@ namespace RPCalculator {
     export const defaultWorksheetTitle: string = "Untitled Worksheet";
     export interface IRootScopeService extends angular.IRootScopeService { textPattern: string; numberPattern: string; vclass: Function; }
     export interface IStorageService extends angular.storage.IStorageService { workbook: IWorkbook; }
-    export interface IWorkbook { title: string; worksheets: IWorksheet[]; }
-    export interface IWorksheet { title: string; judges: IJudge[]; competitors: ICompetitor[]; top?: number; }
-    export interface IJudge { name: string; }
-    export interface ICompetitor { id: number; name: string; scores: number[]; tally?: number[]; rank?: number; }
     export function isBlank(value: any): boolean {
         if (angular.isUndefined(value)) return true;
         if (value === null) return true;
