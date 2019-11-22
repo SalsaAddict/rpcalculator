@@ -51,6 +51,9 @@ var RPCalculator;
     RPCalculator.numberPattern = "(^\\d+$)";
     RPCalculator.defaultWorkbookTitle = "Untitled Workbook";
     RPCalculator.defaultWorksheetTitle = "Untitled Worksheet";
+    function cancel($event) { if (!$event)
+        return; $event.preventDefault(); $event.stopPropagation(); }
+    RPCalculator.cancel = cancel;
     function isBlank(value) {
         if (angular.isUndefined(value))
             return true;
@@ -432,6 +435,16 @@ var RPCalculator;
                     .forEach(function (competitor, index) {
                     competitor.rank = index + 1;
                 });
+            };
+            Controller.prototype.clear = function ($event) {
+                RPCalculator.cancel($event);
+                if (this.$window.confirm("Are you sure you want to clear all scores?")) {
+                    angular.forEach(this.worksheet.competitors, function (competitor) {
+                        competitor.scores = [];
+                        delete competitor.tally;
+                        delete competitor.rank;
+                    });
+                }
             };
             Controller.prototype.copy = function () {
                 var copy = {

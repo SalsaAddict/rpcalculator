@@ -47,6 +47,7 @@ namespace RPCalculator {
     export const defaultWorksheetTitle: string = "Untitled Worksheet";
     export interface IRootScopeService extends angular.IRootScopeService { textPattern: string; numberPattern: string; vclass: Function; }
     export interface IStorageService extends angular.storage.IStorageService { workbook: IWorkbook; }
+    export function cancel($event: angular.IAngularEvent): void { if (!$event) return; $event.preventDefault(); $event.stopPropagation(); }
     export function isBlank(value: any): boolean {
         if (angular.isUndefined(value)) return true;
         if (value === null) return true;
@@ -271,6 +272,16 @@ namespace RPCalculator {
                     .forEach((competitor: ICompetitor, index: number): void => {
                         competitor.rank = index + 1;
                     });
+            }
+            public clear($event?: angular.IAngularEvent): void {
+                cancel($event);
+                if (this.$window.confirm("Are you sure you want to clear all scores?")) {
+                    angular.forEach(this.worksheet.competitors, (competitor: ICompetitor): void => {
+                        competitor.scores = [];
+                        delete competitor.tally;
+                        delete competitor.rank;
+                    });
+                }
             }
             public copy(): void {
                 let copy: IWorksheet = {

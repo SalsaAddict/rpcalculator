@@ -4,9 +4,15 @@
 
 table, thead, tbody, tfoot, td, th {
     border-collapse: collapse !important;
-    border: 1px solid silver !important;
+    border: 1px solid Silver !important;
 }
 
 table {
     page-break-inside: avoid;
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+    }
 }

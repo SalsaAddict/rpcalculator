@@ -18,7 +18,11 @@
             <ng-include src="$ctrl.templateUrl"></ng-include>
         </div>
         <div class="card-footer">
-            <button type="button" class="btn btn-primary pull-left" title="Copy Results to New Worksheet" ng-click="$ctrl.copy()" ng-if="$ctrl.tabIndex === 2">
+            <button type="button" class="btn btn-danger pull-left" title="Copy Results to New Worksheet" ng-click="$ctrl.clear($event)" ng-if="$ctrl.tabIndex === 0">
+                <i class="fa fa-fw fa-times"></i>
+                <span>Clear</span>
+            </button>
+            <button type="button" class="btn btn-primary pull-left animated rubberBand" title="Copy Results to New Worksheet" ng-click="$ctrl.copy()" ng-if="$ctrl.tabIndex === 2">
                 <i class="fa fa-fw fa-copy"></i>
                 <span>New&hellip;</span>
             </button>

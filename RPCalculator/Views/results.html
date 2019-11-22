@@ -14,11 +14,13 @@
         </thead>
         <tbody ng-form="form">
             <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank' | limitTo: $ctrl.top">
-                <th class="h3 align-middle bg-primary text-white p-1">
-                    <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
+                <th class="h3 align-middle p-1">
+                    <div class="animated fadeInLeft">
+                        <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
+                    </div>
                 </th>
-                <th class="h4 text-dark align-middle p-1"><strong>#{{competitor.id}}</strong></th>
-                <th class="h4 text-dark align-middle text-nowrap p-1"><strong>{{competitor.name}}</strong></th>
+                <th class="h4 text-dark align-middle text-nowrap p-1 animated fadeInDown"><strong>{{competitor.name}}</strong></th>
+                <th class="text-dark align-middle p-1 animated fadeInRight"><strong>#{{competitor.id}}</strong></th>
                 <td ng-repeat="item in $ctrl.competitors" class="align-middle p-1">
                     <ng-switch on="!!competitor.tally[$index * 2]">
                         <div ng-switch-when="true" ng-class="{ 'text-muted': competitor.tally[($index - 1) * 2] }">
