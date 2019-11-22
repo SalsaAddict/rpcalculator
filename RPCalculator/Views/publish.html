@@ -1,16 +1,21 @@
 ﻿<div class="container-fluid">
-    <div class="text-center" style="runn"><p><h4 ng-bind="$publish.workbook.title"></h4></p></div>
     <div ng-repeat="$ctrl in $publish.workbook.worksheets" class="text-center">
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th colspan="{{$ctrl.judges.length + $ctrl.competitors.length + 3}}" class="h5"><b>{{$ctrl.title}}</b></th>
+                        <th colspan="{{$ctrl.judges.length + $ctrl.competitors.length + 3}}" class="h5">
+                            <b>
+                                <span ng-bind="$publish.workbook.title"></span>
+                                <br />
+                                <small ng-bind="$ctrl.title"></small>
+                            </b>
+                        </th>
                     </tr>
                     <tr>
                         <th rowspan="2" class="align-middle p-1">Result</th>
                         <th rowspan="2" class="align-middle p-1" colspan="2">Competitors</th>
-                        <th colspan="{{$ctrl.judges.length}}" class="align-middle p-1">Judges' Ranking</th>
+                        <th colspan="{{$ctrl.judges.length}}" class="align-middle p-1">Judges</th>
                         <th colspan="{{$ctrl.competitors.length}}" class="align-middle p-1">Tally</th>
                     </tr>
                     <tr>
