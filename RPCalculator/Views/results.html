@@ -3,7 +3,9 @@
         <thead>
             <tr>
                 <th rowspan="2" class="align-middle p-1">
-                    <select class="form-control" ng-model="$ctrl.top" ng-options="top as 'Top ' + top for top in $ctrl.tops"></select>
+                    <div class="btn-group btn-group-justify">
+                        <select class="btn btn-primary" ng-model="$ctrl.top" ng-options="top as 'Top ' + top for top in $ctrl.tops"></select>
+                    </div>
                 </th>
                 <th colspan="2" rowspan="2" class="align-middle p-1">Competitors</th>
                 <th colspan="{{$ctrl.competitors.length}}" class="align-middle p-1">Tally</th>
@@ -15,12 +17,12 @@
         <tbody ng-form="form">
             <tr ng-repeat="competitor in $ctrl.competitors | orderBy: 'rank' | limitTo: $ctrl.top">
                 <th class="h3 align-middle p-1">
-                    <div class="animated fadeInLeft">
+                    <div class="animated fadeIn">
                         <span>{{$ctrl.ranks[competitor.rank - 1][0]}}<sup>{{$ctrl.ranks[competitor.rank - 1][1]}}{{$ctrl.ranks[competitor.rank - 1][2]}}</sup></span>
                     </div>
                 </th>
-                <th class="h4 text-dark align-middle text-nowrap p-1 animated fadeInDown"><strong>{{competitor.name}}</strong></th>
-                <th class="text-dark align-middle p-1 animated fadeInRight"><strong>#{{competitor.id}}</strong></th>
+                <th class="h4 text-dark align-middle text-nowrap p-1 animated fadeIn"><strong>{{competitor.name}}</strong></th>
+                <th class="text-dark align-middle p-1 animated fadeIn"><strong>#{{competitor.id}}</strong></th>
                 <td ng-repeat="item in $ctrl.competitors" class="align-middle p-1">
                     <ng-switch on="!!competitor.tally[$index * 2]">
                         <div ng-switch-when="true" ng-class="{ 'text-muted': competitor.tally[($index - 1) * 2] }">

@@ -11,8 +11,10 @@
             </ul>
         </div>
         <h5 class="card-header bg-danger text-white card-subtitle" ng-if="form.$invalid">
-            <i class="fa fa-fw" ng-class="{ 'fa-check-circle': form.$valid, 'fa-warning': form.$invalid }"></i>
-            <span>{{$ctrl.message}}</span>
+            <div class="animated rubberBand">
+                <i class="fa fa-fw" ng-class="{ 'fa-check-circle': form.$valid, 'fa-warning': form.$invalid }"></i>
+                <span>{{$ctrl.message}}</span>
+            </div>
         </h5>
         <div class="card-body p-2">
             <ng-include src="$ctrl.templateUrl"></ng-include>
