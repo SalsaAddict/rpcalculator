@@ -13,44 +13,124 @@
         {
           "id": 1,
           "name": "Kadeem",
-          "scores": []
+          "scores": [ 8, 6, 7 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, -2, 13, -3, 21 ],
+          "rank": 7
         },
         {
           "id": 2,
           "name": "Bryan",
-          "scores": []
+          "scores": [ 7, 8, 8 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, null, null, -3, 23 ],
+          "rank": 8
         },
         {
           "id": 3,
           "name": "Justin",
-          "scores": []
+          "scores": [ 1, 5, 2 ],
+          "tally": [ null, null, -2, 3, -2, 3, -2, 3, -3, 8, -3, 8, -3, 8, -3, 8 ],
+          "rank": 1
         },
         {
           "id": 4,
           "name": "Kenny",
-          "scores": []
+          "scores": [ 4, 3, 1 ],
+          "tally": [ null, null, null, null, -2, 4, -3, 8, -3, 8, -3, 8, -3, 8, -3, 8 ],
+          "rank": 3
         },
         {
           "id": 5,
           "name": "Omar",
-          "scores": []
+          "scores": [ 5, 4, 4 ],
+          "tally": [ null, null, null, null, null, null, -2, 8, -3, 13, -3, 13, -3, 13, -3, 13 ],
+          "rank": 5
         },
         {
           "id": 6,
           "name": "Amir",
-          "scores": []
+          "scores": [ 6, 7, 3 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, -2, 9, -3, 16, -3, 16 ],
+          "rank": 6
         },
         {
           "id": 7,
           "name": "Usman",
-          "scores": []
+          "scores": [ 2, 1, 5 ],
+          "tally": [ null, null, -2, 3, -2, 3, -2, 3, -3, 8, -3, 8, -3, 8, -3, 8 ],
+          "rank": 2
         },
         {
           "id": 8,
           "name": "Ozan",
-          "scores": []
+          "scores": [ 3, 2, 6 ],
+          "tally": [ null, null, null, null, -2, 5, -2, 5, -2, 5, -3, 11, -3, 11, -3, 11 ],
+          "rank": 4
         }
       ]
+    },
+    {
+      "title": "Round 2 - Leaders",
+      "judges": [
+        { "name": "Julian" },
+        { "name": "Alex" },
+        { "name": "Gabriel" }
+      ],
+      "competitors": [
+        {
+          "id": 3,
+          "name": "Justin",
+          "scores": [ 4, 4, 2 ],
+          "tally": [ null, null, null, null, null, null, -3, 10 ],
+          "rank": 4
+        },
+        {
+          "id": 4,
+          "name": "Kenny",
+          "scores": [ 2, 2, 3 ],
+          "tally": [ null, null, -2, 4, -3, 7, -3, 7 ],
+          "rank": 2
+        },
+        {
+          "id": 7,
+          "name": "Usman",
+          "scores": [ 3, 3, 4 ],
+          "tally": [ null, null, null, null, -2, 6, -3, 10 ],
+          "rank": 3
+        },
+        {
+          "id": 8,
+          "name": "Ozan",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Round 3 - Leaders",
+      "judges": [
+        { "name": "Angela" },
+        { "name": "Pebbles" },
+        { "name": "Crowd" }
+      ],
+      "competitors": [
+        {
+          "id": 4,
+          "name": "Kenny",
+          "scores": [ 1, 1, 2 ],
+          "tally": [ -2, 2, -3, 4 ],
+          "rank": 1
+        },
+        {
+          "id": 8,
+          "name": "Ozan",
+          "scores": [ 2, 2, 1 ],
+          "tally": [ null, null, -3, 5 ],
+          "rank": 2
+        }
+      ],
+      "top": 2
     },
     {
       "title": "Round 1 - Followers",
@@ -64,44 +144,124 @@
         {
           "id": 1,
           "name": "Dalia",
-          "scores": []
+          "scores": [ 3, 4, 3 ],
+          "tally": [ null, null, null, null, -2, 6, -3, 10, -3, 10, -3, 10, -3, 10, -3, 10 ],
+          "rank": 3
         },
         {
           "id": 2,
           "name": "Chiara",
-          "scores": []
+          "scores": [ 1, 1, 2 ],
+          "tally": [ -2, 2, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4, -3, 4 ],
+          "rank": 1
         },
         {
           "id": 3,
           "name": "Sharon",
-          "scores": []
+          "scores": [ 8, 8, 8 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, null, null, -3, 24 ],
+          "rank": 8
         },
         {
           "id": 4,
           "name": "Kate",
-          "scores": []
+          "scores": [ 6, 5, 5 ],
+          "tally": [ null, null, null, null, null, null, null, null, -2, 10, -3, 16, -3, 16, -3, 16 ],
+          "rank": 6
         },
         {
           "id": 5,
           "name": "Ashwini",
-          "scores": []
+          "scores": [ 2, 2, 1 ],
+          "tally": [ null, null, -3, 5, -3, 5, -3, 5, -3, 5, -3, 5, -3, 5, -3, 5 ],
+          "rank": 2
         },
         {
           "id": 6,
           "name": "Milya",
-          "scores": []
+          "scores": [ 4, 6, 4 ],
+          "tally": [ null, null, null, null, null, null, -2, 8, -2, 8, -3, 14, -3, 14, -3, 14 ],
+          "rank": 4
         },
         {
           "id": 7,
           "name": "Patricia",
-          "scores": []
+          "scores": [ 7, 7, 6 ],
+          "tally": [ null, null, null, null, null, null, null, null, null, null, null, null, -3, 20, -3, 20 ],
+          "rank": 7
         },
         {
           "id": 8,
           "name": "Marzena",
-          "scores": []
+          "scores": [ 5, 3, 7 ],
+          "tally": [ null, null, null, null, null, null, null, null, -2, 8, -2, 8, -3, 15, -3, 15 ],
+          "rank": 5
         }
       ]
+    },
+    {
+      "title": "Round 2 - Followers",
+      "judges": [
+        { "name": "Angela" },
+        { "name": "Pebbles" },
+        { "name": "Viola" }
+      ],
+      "competitors": [
+        {
+          "id": 1,
+          "name": "Dalia",
+          "scores": [ 3, 3, 2 ],
+          "tally": [ null, null, null, null, -3, 8, -3, 8 ],
+          "rank": 3
+        },
+        {
+          "id": 2,
+          "name": "Chiara",
+          "scores": [ 2, 2, 3 ],
+          "tally": [ null, null, -2, 4, -3, 7, -3, 7 ],
+          "rank": 2
+        },
+        {
+          "id": 5,
+          "name": "Ashwini",
+          "scores": [ 1, 1, 1 ],
+          "tally": [ -3, 3, -3, 3, -3, 3, -3, 3 ],
+          "rank": 1
+        },
+        {
+          "id": 6,
+          "name": "Milya",
+          "scores": [ 4, 4, 4 ],
+          "tally": [ null, null, null, null, null, null, -3, 12 ],
+          "rank": 4
+        }
+      ],
+      "top": 2
+    },
+    {
+      "title": "Round 3 - Followers",
+      "judges": [
+        { "name": "Julian" },
+        { "name": "Alex" },
+        { "name": "Crowd" }
+      ],
+      "competitors": [
+        {
+          "id": 2,
+          "name": "Chiara",
+          "scores": [ 1, 2, 2 ],
+          "tally": [ null, null, -3, 5 ],
+          "rank": 2
+        },
+        {
+          "id": 5,
+          "name": "Ashwini",
+          "scores": [ 2, 1, 1 ],
+          "tally": [ -2, 2, -3, 4 ],
+          "rank": 1
+        }
+      ],
+      "top": 2
     }
   ]
 }
